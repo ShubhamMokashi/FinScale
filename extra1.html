@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FinScale – Digital Growth for Mutual Fund Advisors</title>
+<style>
+:root{
+  --g:#00e5a0;--g2:#00b87a;--b:#1a56db;--b2:#3b82f6;
+  --dark:#060d1c;--dark2:#0a1628;
+  --panel:rgba(255,255,255,.04);--bdr:rgba(255,255,255,.08);
+  --light:#5b7a9a;--text:rgba(218,232,248,.85);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:68px;}
+body{background:var(--dark);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+
+/* NAV */
+header{position:fixed;top:0;width:100%;height:68px;padding:0 60px;display:flex;justify-content:space-between;align-items:center;z-index:900;transition:background .4s,backdrop-filter .4s;}
+header.scrolled{background:rgba(6,13,28,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);}
+.nb{display:flex;align-items:center;gap:10px;}
+.nb img{height:40px;object-fit:contain;}
+.bn{font-size:18px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(90deg,var(--g),var(--b2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.bs{font-size:9.5px;color:var(--light);font-weight:500;letter-spacing:.4px;text-transform:uppercase;}
+.nl{display:flex;align-items:center;gap:28px;}
+.nl a{font-size:13px;font-weight:600;color:rgba(218,232,248,.5);transition:color .2s;white-space:nowrap;}
+.nl a:hover{color:#fff;}
+.nc{padding:9px 22px;border-radius:6px;background:var(--g);color:#030d1a;font-weight:800;font-size:12.5px;margin-left:8px;transition:all .2s;display:inline-block;}
+.nc:hover{background:#fff;transform:translateY(-1px);}
+.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.ham span{display:block;width:22px;height:2px;background:rgba(218,232,248,.7);border-radius:2px;transition:.3s;}
+.mn{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(6,13,28,.98);border-bottom:1px solid var(--bdr);z-index:899;padding:12px 24px 24px;flex-direction:column;}
+.mn.open{display:flex;}
+.mn a{padding:14px 0;border-bottom:1px solid var(--bdr);font-size:15px;font-weight:600;color:rgba(218,232,248,.7);transition:color .2s;}
+.mn a:last-child{border:none;}
+.mn a:hover{color:var(--g);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 40px 80px;position:relative;overflow:hidden;}
+#sc{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.ha{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 80%,rgba(0,229,160,.06),transparent 70%),radial-gradient(ellipse 40% 40% at 20% 20%,rgba(26,86,219,.08),transparent 60%);}
+.hero>*:not(#sc):not(.ha){position:relative;z-index:2;}
+
+.hbadge{display:inline-flex;align-items:center;gap:8px;padding:6px 18px 6px 8px;border-radius:50px;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);font-size:11.5px;font-weight:700;color:var(--g);margin-bottom:36px;letter-spacing:.4px;}
+.bdot{width:22px;height:22px;border-radius:50%;background:rgba(0,229,160,.12);display:flex;align-items:center;justify-content:center;}
+.bdot::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--g);display:block;animation:bpulse 2s infinite;}
+@keyframes bpulse{0%,100%{box-shadow:0 0 0 0 rgba(0,229,160,.5);}50%{box-shadow:0 0 0 6px rgba(0,229,160,0);}}
+
+.ht1{font-size:clamp(52px,7.5vw,100px);font-weight:900;color:#fff;letter-spacing:-3px;line-height:1;margin-bottom:2px;}
+.hrot{height:clamp(52px,7.5vw,100px);overflow:hidden;margin-bottom:2px;}
+.hreel{display:flex;flex-direction:column;animation:reel 10s ease infinite;}
+.hrw{display:block;height:clamp(52px,7.5vw,100px);line-height:clamp(52px,7.5vw,100px);font-size:clamp(52px,7.5vw,100px);font-weight:900;letter-spacing:-3px;white-space:nowrap;}
+.c1{background:linear-gradient(90deg,#3b82f6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.c2{background:linear-gradient(90deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.c3{background:linear-gradient(90deg,#ec4899,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.c4{color:var(--g);-webkit-text-fill-color:var(--g);}
+@keyframes reel{0%,20%{transform:translateY(0);}25%,45%{transform:translateY(calc(clamp(52px,7.5vw,100px)*-1));}50%,70%{transform:translateY(calc(clamp(52px,7.5vw,100px)*-2));}75%,95%{transform:translateY(calc(clamp(52px,7.5vw,100px)*-3));}100%{transform:translateY(0);}}
+.ht2{font-size:clamp(52px,7.5vw,100px);font-weight:900;color:#fff;letter-spacing:-3px;line-height:1;margin-bottom:24px;}
+.hsub{font-size:17px;color:rgba(218,232,248,.6);max-width:540px;margin:0 auto 36px;line-height:1.8;font-weight:400;}
+.hsub strong{color:rgba(218,232,248,.9);font-weight:600;}
+.hbtns{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:44px;flex-wrap:wrap;}
+.bp{padding:16px 38px;border-radius:8px;background:var(--g);color:#030d1a;font-weight:800;font-size:14.5px;transition:all .3s;display:inline-flex;align-items:center;gap:10px;position:relative;overflow:hidden;}
+.bp::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transform:translateX(-100%);transition:transform .5s;}
+.bp:hover::after{transform:translateX(100%);}
+.bp:hover{transform:translateY(-3px);box-shadow:0 18px 50px rgba(0,229,160,.35);}
+.bg{padding:15px 36px;border-radius:8px;border:1.5px solid rgba(255,255,255,.14);color:rgba(218,232,248,.8);font-weight:700;font-size:14.5px;transition:all .3s;display:inline-block;}
+.bg:hover{border-color:var(--g);color:#fff;background:rgba(0,229,160,.06);}
+.htags{display:grid;grid-template-columns:repeat(4,auto);gap:10px;justify-content:center;}
+.htag{padding:11px 22px;border-radius:50px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:13px;font-weight:600;color:rgba(218,232,248,.65);transition:all .25s;cursor:default;white-space:nowrap;backdrop-filter:blur(8px);}
+.htag:hover{border-color:var(--g);color:var(--g);background:rgba(0,229,160,.07);transform:translateY(-2px);}
+
+/* STATS */
+.stats{padding:60px 60px;position:relative;z-index:1;}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.02);}
+.sc{padding:38px 28px;text-align:center;border-right:1px solid var(--bdr);opacity:0;transform:translateY(22px);transition:all .7s cubic-bezier(.22,1,.36,1);}
+.sc:last-child{border-right:none;}
+.sc.show{opacity:1;transform:none;}
+.sc:hover{background:rgba(0,229,160,.04);}
+.snum{font-size:48px;font-weight:900;letter-spacing:-2px;background:linear-gradient(135deg,var(--g),var(--b2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:8px;}
+.slbl{font-size:11.5px;color:var(--light);font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
+
+/* STORY SECTION */
+.story{padding:110px 60px;position:relative;z-index:1;}
+.story::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bdr),transparent);}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-bottom:100px;}
+.sg.rev{direction:rtl;}
+.sg.rev>*{direction:ltr;}
+.stxt{opacity:0;transform:translateX(-36px);transition:all .9s cubic-bezier(.22,1,.36,1);}
+.stxt.fr{transform:translateX(36px);}
+.stxt.show{opacity:1;transform:none;}
+.slabel{font-size:10.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g);margin-bottom:16px;display:flex;align-items:center;gap:10px;font-family:monospace;}
+.slabel::before{content:"";width:28px;height:1px;background:var(--g);}
+.sh2{font-size:clamp(30px,3vw,44px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-1.5px;margin-bottom:16px;}
+.sh2 span{background:linear-gradient(90deg,var(--g),var(--b2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sp{font-size:15px;color:rgba(218,232,248,.5);line-height:1.85;margin-bottom:26px;}
+.sbullets{display:flex;flex-direction:column;gap:12px;}
+.sbullet{display:flex;align-items:flex-start;gap:12px;font-size:14px;color:rgba(218,232,248,.6);font-weight:500;}
+.bico{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.2);display:flex;align-items:center;justify-content:center;font-size:12px;}
+.svis{opacity:0;transform:translateX(36px) scale(.97);transition:all .9s .15s cubic-bezier(.22,1,.36,1);}
+.svis.fl{transform:translateX(-36px) scale(.97);}
+.svis.show{opacity:1;transform:none;}
+.vc{border-radius:18px;border:1px solid var(--bdr);background:var(--panel);backdrop-filter:blur(12px);position:relative;padding:28px;overflow:hidden;transition:transform .6s cubic-bezier(.22,1,.36,1),box-shadow .6s;}
+.vc:hover{transform:perspective(1200px) rotateX(-4deg) rotateY(4deg) translateY(-8px);box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 1px rgba(0,229,160,.15);}
+.vm{position:absolute;padding:14px 18px;border-radius:12px;background:rgba(6,13,28,.92);border:1px solid rgba(0,229,160,.2);}
+.vm.tr{top:16px;right:16px;animation:fA 4s ease-in-out infinite;}
+.vm.bl{bottom:16px;left:16px;animation:fB 3.5s ease-in-out infinite;}
+@keyframes fA{0%,100%{transform:translate(0,0);}50%{transform:translate(-4px,-8px);}}
+@keyframes fB{0%,100%{transform:translate(0,0);}50%{transform:translate(4px,-6px);}}
+.vmv{font-size:20px;font-weight:800;color:var(--g);margin-bottom:2px;}
+.vml{font-size:10px;color:rgba(218,232,248,.4);text-transform:uppercase;letter-spacing:.5px;}
+.cbars{display:flex;align-items:flex-end;gap:6px;height:130px;padding:0 8px 0;}
+.cbar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(0,229,160,.65),rgba(0,229,160,.1));animation:bg .8s ease both;}
+@keyframes bg{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+.clabel{font-size:11px;color:rgba(218,232,248,.35);margin-top:10px;font-family:monospace;padding:0 8px;}
+/* mockup */
+.mwrap{border-radius:12px;overflow:hidden;border:1px solid var(--bdr);}
+.mbar{background:rgba(10,20,40,.9);padding:10px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bdr);}
+.md{width:10px;height:10px;border-radius:50%;}
+.mdprev{height:200px;overflow:hidden;position:relative;background:linear-gradient(135deg,#0a1628,#0d2040);}
+.mdprev iframe{width:1440px;height:900px;border:none;transform:scale(0.278);transform-origin:top left;pointer-events:none;}
+.mdover{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(8,15,30,.97));}
+.mlive{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;}
+.mlive span{font-size:12px;color:var(--g);font-weight:700;font-family:monospace;}
+.mdots{display:flex;gap:5px;}
+.mdots span{width:7px;height:7px;border-radius:50%;}
+
+/* SERVICES */
+.svc{padding:100px 60px;position:relative;z-index:1;}
+.svc::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(26,86,219,.04),transparent 70%);pointer-events:none;}
+.svcgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.scard{padding:30px 26px;border-radius:16px;background:var(--panel);border:1px solid var(--bdr);position:relative;overflow:hidden;opacity:0;transform:translateY(26px);transition:all .65s cubic-bezier(.22,1,.36,1);}
+.scard.show{opacity:1;transform:none;}
+.scard::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,160,.5),transparent);transform:scaleX(0);transition:transform .4s;}
+.scard:hover::before{transform:scaleX(1);}
+.scard:hover{border-color:rgba(0,229,160,.18);background:rgba(255,255,255,.06);transform:translateY(-5px);}
+.snum2{font-size:10.5px;color:var(--g);opacity:.5;margin-bottom:16px;font-family:monospace;letter-spacing:1px;}
+.sico{width:46px;height:46px;border-radius:12px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;transition:all .3s;}
+.sico svg{width:21px;height:21px;}
+.scard:hover .sico{background:rgba(0,229,160,.15);border-color:rgba(0,229,160,.3);}
+.scard h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:9px;line-height:1.3;}
+.scard p{font-size:13px;color:rgba(218,232,248,.4);line-height:1.72;}
+.sarr{margin-top:20px;font-size:12px;font-weight:700;color:var(--g);display:flex;align-items:center;gap:6px;opacity:0;transform:translateX(-8px);transition:all .3s;font-family:monospace;}
+.scard:hover .sarr{opacity:1;transform:none;}
+
+/* MARQUEE */
+.mq{padding:0;position:relative;z-index:1;overflow:hidden;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.mq::before,.mq::after{content:"";position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;}
+.mq::before{left:0;background:linear-gradient(90deg,var(--dark),transparent);}
+.mq::after{right:0;background:linear-gradient(-90deg,var(--dark),transparent);}
+.mqwrap{padding:20px 0;overflow:hidden;}
+.mqtrack{display:flex;gap:14px;width:max-content;animation:mqx 24s linear infinite;}
+@keyframes mqx{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.mqtrack:hover{animation-play-state:paused;}
+.mqchip{display:flex;align-items:center;gap:10px;padding:13px 22px;border-radius:50px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);white-space:nowrap;transition:all .3s;}
+.mqchip:hover{border-color:rgba(0,229,160,.25);background:rgba(0,229,160,.05);}
+.mqchip span{font-size:13px;font-weight:700;color:rgba(218,232,248,.6);}
+
+/* PRICING */
+.prc{padding:100px 60px;position:relative;z-index:1;}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.pcard{padding:38px 32px;border-radius:18px;background:var(--panel);border:1px solid var(--bdr);position:relative;overflow:hidden;opacity:0;transform:translateY(26px);transition:all .6s cubic-bezier(.22,1,.36,1);}
+.pcard.show{opacity:1;transform:none;}
+.pcard.feat{background:linear-gradient(160deg,rgba(0,229,160,.08),rgba(26,86,219,.05));border-color:rgba(0,229,160,.28);}
+.pcard.feat::before{content:"";position:absolute;inset:-1px;border-radius:19px;z-index:-1;background:conic-gradient(from 0deg,rgba(0,229,160,.3),transparent 25%,rgba(37,99,235,.3) 50%,transparent 75%,rgba(0,229,160,.3));animation:csp 4s linear infinite;}
+@keyframes csp{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+.pcard:hover{transform:translateY(-10px);border-color:rgba(0,229,160,.22);}
+.pbadge{position:absolute;top:20px;right:20px;padding:4px 12px;border-radius:20px;background:var(--g);color:#030d1a;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
+.ptier{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--g);text-transform:uppercase;margin-bottom:10px;font-family:monospace;}
+.pcard h3{font-size:21px;font-weight:800;color:#fff;margin-bottom:6px;}
+.pdesc{font-size:13px;color:var(--light);margin-bottom:20px;line-height:1.5;}
+.pamt{font-size:52px;font-weight:900;letter-spacing:-2px;background:linear-gradient(90deg,var(--g),var(--b2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;}
+.pper{font-size:12px;color:var(--light);margin-bottom:22px;}
+.pdiv{height:1px;background:var(--bdr);margin-bottom:20px;}
+.pfeats{display:flex;flex-direction:column;gap:10px;margin-bottom:26px;}
+.pf{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:rgba(218,232,248,.65);font-weight:500;}
+.pck{width:17px;height:17px;border-radius:5px;flex-shrink:0;margin-top:2px;background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.25);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--g);font-weight:900;}
+.pf strong{color:#fff;}
+.pbtn{display:block;width:100%;padding:15px;text-align:center;border-radius:10px;background:linear-gradient(90deg,var(--g),var(--b));color:#fff;font-weight:800;font-size:13.5px;position:relative;overflow:hidden;transition:all .3s;}
+.pbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .5s;}
+.pbtn:hover::after{transform:translateX(100%);}
+.pbtn:hover{transform:translateY(-2px);box-shadow:0 16px 42px rgba(0,229,160,.32);}
+
+/* WORK */
+.wk{padding:100px 60px;position:relative;z-index:1;}
+.wk::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(0,229,160,.04),transparent 70%);pointer-events:none;}
+.wgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin-top:56px;}
+.wcard{border-radius:20px;overflow:hidden;border:1px solid var(--bdr);background:rgba(8,16,36,.6);opacity:0;transform:translateY(36px) scale(.97);transition:all .75s cubic-bezier(.22,1,.36,1);cursor:pointer;position:relative;}
+.wcard.show{opacity:1;transform:none;}
+.wcard:hover{border-color:rgba(0,229,160,.3);box-shadow:0 30px 70px rgba(0,0,0,.4);}
+.wcard::after{content:"";position:absolute;inset:-2px;border-radius:22px;z-index:-1;background:linear-gradient(135deg,rgba(0,229,160,.2),transparent,rgba(26,86,219,.15),transparent);opacity:0;transition:opacity .5s;}
+.wcard:hover::after{opacity:1;}
+.wcin{transform-style:preserve-3d;transition:transform .6s cubic-bezier(.22,1,.36,1);}
+.wprev{position:relative;height:270px;overflow:hidden;background:linear-gradient(135deg,#080f1e,#0d1f3e);}
+.wpin{position:absolute;inset:0;transition:transform .7s cubic-bezier(.22,1,.36,1);}
+.wcard:hover .wpin{transform:scale(1.05);}
+.wbr{position:absolute;top:0;left:0;right:0;height:32px;background:rgba(8,16,36,.95);display:flex;align-items:center;padding:0 12px;gap:5px;z-index:3;border-bottom:1px solid rgba(255,255,255,.05);}
+.wd2{width:10px;height:10px;border-radius:50%;}
+.wurl{flex:1;margin-left:8px;height:17px;border-radius:4px;background:rgba(255,255,255,.06);display:flex;align-items:center;padding:0 9px;font-size:9.5px;color:rgba(218,232,248,.3);font-family:monospace;}
+/* iframe preview placeholder - shows stylized preview instead of iframe */
+.wpic{width:100%;height:238px;margin-top:32px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.site-preview-1{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#050e1f 0%,#071428 100%);
+  display:flex;flex-direction:column;
+}
+.sp1-nav{height:32px;background:rgba(0,229,160,.08);border-bottom:1px solid rgba(0,229,160,.12);display:flex;align-items:center;padding:0 16px;gap:12px;}
+.sp1-logo{width:60px;height:10px;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--b2));}
+.sp1-links{display:flex;gap:8px;margin-left:auto;}
+.sp1-link{width:30px;height:6px;border-radius:2px;background:rgba(255,255,255,.15);}
+.sp1-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;}
+.sp1-h1{width:140px;height:10px;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--b2));}
+.sp1-h2{width:100px;height:8px;border-radius:3px;background:rgba(255,255,255,.2);}
+.sp1-h3{width:80px;height:7px;border-radius:3px;background:rgba(255,255,255,.12);}
+.sp1-btns{display:flex;gap:6px;margin-top:4px;}
+.sp1-btn{width:40px;height:14px;border-radius:3px;background:var(--g);opacity:.8;}
+.sp1-btn2{width:36px;height:14px;border-radius:3px;border:1px solid rgba(255,255,255,.2);}
+.sp1-cards{display:flex;gap:5px;padding:0 10px 8px;}
+.sp1-card{flex:1;height:30px;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+.site-preview-2{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,#0a0d1a 0%,#111428 100%);
+  display:flex;flex-direction:column;
+}
+.sp2-nav{height:32px;background:rgba(212,175,55,.08);border-bottom:1px solid rgba(212,175,55,.12);display:flex;align-items:center;padding:0 16px;gap:12px;}
+.sp2-logo{width:60px;height:10px;border-radius:3px;background:linear-gradient(90deg,#d4af37,#f5e091);}
+.sp2-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px;}
+.sp2-h1{width:130px;height:10px;border-radius:3px;background:linear-gradient(90deg,#d4af37,#c8a82c);}
+.sp2-h2{width:95px;height:8px;border-radius:3px;background:rgba(212,175,55,.3);}
+.sp2-h3{width:75px;height:7px;border-radius:3px;background:rgba(255,255,255,.12);}
+.sp2-btns{display:flex;gap:6px;margin-top:4px;}
+.sp2-btn{width:40px;height:14px;border-radius:3px;background:linear-gradient(90deg,#d4af37,#c8a82c);opacity:.9;}
+.sp2-cards{display:flex;gap:5px;padding:0 10px 8px;}
+.sp2-card{flex:1;height:30px;border-radius:5px;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.1);}
+
+.wover{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,transparent 30%,rgba(8,16,36,.97) 100%);}
+.wzoom{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;}
+.wcard:hover .wzoom{opacity:1;}
+.zbtn{padding:11px 26px;border-radius:50px;background:rgba(0,229,160,.1);border:1.5px solid rgba(0,229,160,.4);color:#fff;font-weight:700;font-size:13px;backdrop-filter:blur(10px);transform:translateY(8px);transition:transform .3s .1s;}
+.wcard:hover .zbtn{transform:translateY(0);}
+.winfo{padding:24px 28px 30px;}
+.wtag{display:inline-block;padding:4px 12px;border-radius:4px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.18);font-size:10px;font-weight:700;color:var(--g);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:11px;font-family:monospace;}
+.wcard h3{font-size:20px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.4px;}
+.wcard p{font-size:13.5px;color:rgba(218,232,248,.44);line-height:1.7;margin-bottom:20px;}
+.vbtn{display:inline-flex;align-items:center;gap:10px;padding:13px 28px;border-radius:50px;background:linear-gradient(90deg,var(--g),var(--b));color:#fff;font-weight:800;font-size:13px;position:relative;overflow:hidden;transition:all .4s cubic-bezier(.22,1,.36,1);}
+.vbtn::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .6s;}
+.vbtn:hover::before{transform:translateX(100%);}
+.vbtn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 50px rgba(0,229,160,.45),0 0 0 8px rgba(0,229,160,.08);}
+.vbtn svg{width:15px;height:15px;transition:transform .3s;}
+.vbtn:hover svg{transform:translate(3px,-3px);}
+
+/* REVIEWS */
+.rv{padding:100px 60px;position:relative;z-index:1;background:rgba(255,255,255,.01);border-top:1px solid var(--bdr);}
+.rvgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:54px;}
+.rvc{padding:28px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid var(--bdr);position:relative;overflow:hidden;opacity:0;transform:translateY(24px);transition:all .6s cubic-bezier(.22,1,.36,1);}
+.rvc.show{opacity:1;transform:none;}
+.rvc:hover{border-color:rgba(0,229,160,.18);background:rgba(255,255,255,.055);transform:translateY(-4px);}
+.rvc::before{content:"❝";position:absolute;top:-8px;right:14px;font-size:70px;font-family:Georgia,serif;color:rgba(0,229,160,.05);line-height:1;pointer-events:none;}
+.rstars{display:flex;gap:2px;margin-bottom:13px;}
+.star{color:#f59e0b;font-size:13px;}
+.rtxt{font-size:13.5px;color:rgba(218,232,248,.6);line-height:1.78;margin-bottom:19px;font-style:italic;}
+.rperson{display:flex;align-items:center;gap:11px;}
+.ravatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.1);}
+.rname{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:2px;}
+.rrole{font-size:11.5px;color:var(--light);}
+.rvbadge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--g);font-weight:700;margin-top:3px;font-family:monospace;}
+
+/* CONTACT */
+.ct{padding:100px 60px;position:relative;z-index:1;}
+.ct::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,160,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+.ct>*{position:relative;z-index:1;}
+.cchips{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:46px;}
+.cchip{padding:18px 20px;border-radius:14px;background:var(--panel);border:1px solid var(--bdr);transition:all .25s;}
+.cchip:hover{border-color:rgba(0,229,160,.22);background:rgba(0,229,160,.04);transform:translateY(-3px);}
+.cico{font-size:20px;margin-bottom:8px;}
+.clbl{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--light);text-transform:uppercase;margin-bottom:4px;font-family:monospace;}
+.cval{font-size:13.5px;font-weight:700;color:#fff;}
+.cinner{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;}
+.cfc{padding:42px 40px;border-radius:18px;background:var(--panel);border:1px solid var(--bdr);}
+.cfc h3{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;}
+.cdesc{font-size:14px;color:rgba(218,232,248,.44);line-height:1.7;margin-bottom:26px;}
+.cform{display:flex;flex-direction:column;gap:14px;}
+.crow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.cform input,.cform textarea{padding:14px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.05);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;outline:none;transition:border-color .25s,background .25s;}
+.cform input::placeholder,.cform textarea::placeholder{color:rgba(218,232,248,.25);}
+.cform input:focus,.cform textarea:focus{border-color:var(--g);background:rgba(0,229,160,.05);}
+.cform textarea{height:110px;resize:none;}
+.csubmit{padding:16px;border-radius:10px;background:linear-gradient(90deg,var(--g),var(--b));color:#fff;font-weight:800;font-size:15px;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;box-shadow:0 8px 28px rgba(0,229,160,.2);transition:all .3s;position:relative;overflow:hidden;}
+.csubmit::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform:translateX(-100%);transition:transform .5s;}
+.csubmit:hover::after{transform:translateX(100%);}
+.csubmit:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(0,229,160,.35);}
+.cform small{font-size:11px;color:rgba(218,232,248,.2);text-align:center;}
+.cright{display:flex;flex-direction:column;gap:18px;}
+.wcard2{padding:34px;border-radius:18px;background:linear-gradient(145deg,rgba(0,229,160,.07),rgba(26,86,219,.04));border:1px solid rgba(0,229,160,.12);flex:1;}
+.wcard2 h4{font-size:17px;font-weight:800;color:#fff;margin-bottom:20px;}
+.wlist{display:flex;flex-direction:column;gap:15px;}
+.witem{display:flex;gap:13px;}
+.wnum{width:30px;height:30px;border-radius:8px;flex-shrink:0;background:rgba(0,229,160,.12);border:1px solid rgba(0,229,160,.22);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--g);font-family:monospace;}
+.wt h5{font-size:13.5px;font-weight:700;color:#fff;margin-bottom:2px;}
+.wt p{font-size:12.5px;color:var(--light);line-height:1.5;}
+.dcard{padding:24px 34px;border-radius:18px;background:var(--panel);border:1px solid var(--bdr);}
+.dcard h4{font-size:13px;font-weight:700;color:rgba(218,232,248,.5);margin-bottom:13px;text-transform:uppercase;letter-spacing:.5px;font-family:monospace;}
+.dbtns{display:flex;gap:10px;}
+.dbtn{flex:1;padding:13px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:13px;transition:all .25s;border:none;cursor:pointer;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;}
+.dbtn.wa{background:linear-gradient(90deg,#25d366,#128c7e);color:#fff;}
+.dbtn.wa:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(37,211,102,.35);}
+.dbtn.cl{background:rgba(255,255,255,.05);border:1px solid var(--bdr);color:rgba(218,232,248,.8);}
+.dbtn.cl:hover{border-color:var(--g);color:var(--g);}
+
+/* WA FLOAT */
+.waf{position:fixed;bottom:28px;right:28px;z-index:997;background:linear-gradient(135deg,#25d366,var(--g));color:#fff;padding:14px 24px;border-radius:50px;font-weight:800;font-size:14px;box-shadow:0 12px 40px rgba(0,229,160,.35);display:flex;align-items:center;gap:10px;animation:bob 3s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.waf:hover{animation:none;transform:translateY(-6px) scale(1.05);box-shadow:0 22px 56px rgba(0,229,160,.5);}
+.waico{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.sct{position:fixed;bottom:92px;right:28px;z-index:997;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:rgba(218,232,248,.5);font-size:16px;cursor:pointer;opacity:0;transform:translateY(16px);transition:all .3s;}
+.sct.vis{opacity:1;transform:none;}
+.sct:hover{background:var(--g);color:#030d1a;border-color:var(--g);}
+
+/* FOOTER */
+footer{padding:30px 60px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--light);position:relative;z-index:1;}
+footer span{color:var(--g);}
+.fl{display:flex;gap:22px;}
+.fl a{color:var(--light);transition:color .2s;font-size:12.5px;font-weight:500;}
+.fl a:hover{color:var(--g);}
+
+/* SHARED */
+.sh{text-align:center;margin-bottom:56px;}
+.eye{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--g);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px;font-family:monospace;}
+.eye::before,.eye::after{content:"";flex:1;max-width:56px;height:1px;background:rgba(0,229,160,.35);}
+.sh2t{font-size:clamp(30px,3vw,44px);font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-1.5px;line-height:1.1;}
+.sh2t span{background:linear-gradient(90deg,var(--g),var(--b2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.shp{font-size:15px;color:rgba(218,232,248,.44);max-width:470px;margin:0 auto;line-height:1.75;}
+.rev{opacity:0;transform:translateY(26px);transition:all .75s cubic-bezier(.22,1,.36,1);}
+.rev.show{opacity:1;transform:none;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .svcgrid{grid-template-columns:repeat(2,1fr);}
+  .pgrid{grid-template-columns:repeat(2,1fr);}
+  .wgrid{grid-template-columns:1fr;}
+  .rvgrid{grid-template-columns:repeat(2,1fr);}
+  .cchips{grid-template-columns:repeat(2,1fr);}
+  .sg{gap:50px;}
+}
+@media(max-width:900px){
+  header{padding:0 20px;}
+  .nl,.nc{display:none;}
+  .ham{display:flex;}
+  .hero{padding:110px 22px 70px;}
+  .ht1,.ht2{font-size:38px;letter-spacing:-2px;}
+  .hrot{height:44px;}
+  .hreel{animation:none;}
+  .hrw{height:44px;line-height:44px;font-size:38px;letter-spacing:-2px;display:none;}
+  .hrw:first-child{display:block;}
+  .htags{grid-template-columns:1fr 1fr;}
+  .stats{padding:40px 20px;}
+  .sgrid{grid-template-columns:repeat(2,1fr);}
+  .sc:nth-child(2){border-right:none;}
+  .sc:nth-child(3){border-top:1px solid var(--bdr);}
+  .sc:nth-child(4){border-top:1px solid var(--bdr);border-right:none;}
+  .story{padding:60px 20px;}
+  .sg{grid-template-columns:1fr;gap:36px;margin-bottom:60px;}
+  .sg.rev{direction:ltr;}
+  .svc{padding:60px 20px;}
+  .svcgrid{grid-template-columns:1fr;}
+  .prc{padding:60px 20px;}
+  .pgrid{grid-template-columns:1fr;}
+  .wk{padding:60px 20px;}
+  .rv{padding:60px 20px;}
+  .rvgrid{grid-template-columns:1fr;}
+  .ct{padding:60px 20px;}
+  .cinner{grid-template-columns:1fr;}
+  .crow{grid-template-columns:1fr;}
+  .cfc{padding:28px 24px;}
+  footer{flex-direction:column;gap:14px;text-align:center;padding:24px;}
+  .fl{flex-wrap:wrap;justify-content:center;}
+  .waf{padding:14px;border-radius:50%;}
+  .walbl{display:none;}
+}
+@media(max-width:480px){
+  .ht1,.ht2{font-size:32px;letter-spacing:-1.5px;}
+  .hrot{height:36px;}
+  .htags{max-width:100%;}
+  .cchips{grid-template-columns:1fr 1fr;}
+  .dbtns{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cur" style="position:fixed;width:11px;height:11px;background:var(--g);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s;"></div>
+<div id="curR" style="position:fixed;width:38px;height:38px;border:1.5px solid rgba(0,229,160,.35);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);"></div>
+
+<!-- NAV -->
+<header id="hdr">
+  <div class="nb">
+    <img src="Logo.png" alt="FinScale" onerror="this.style.display='none'">
+    <div><div class="bn">FinScale</div><div class="bs">Digital Growth for MFDs</div></div>
+  </div>
+  <div class="nl">
+    <a href="#services">Services</a><a href="#work">Our Work</a>
+    <a href="#pricing">Pricing</a><a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+    <a class="nc" href="https://wa.me/917204914191" target="_blank">Get Started →</a>
+  </div>
+  <div class="ham" id="ham"><span></span><span></span><span></span></div>
+</header>
+<div class="mn" id="mn">
+  <a href="#services" onclick="cn()">Services</a><a href="#work" onclick="cn()">Our Work</a>
+  <a href="#pricing" onclick="cn()">Pricing</a><a href="#reviews" onclick="cn()">Reviews</a>
+  <a href="#contact" onclick="cn()">Contact</a>
+  <a href="https://wa.me/917204914191" target="_blank" onclick="cn()">WhatsApp Us →</a>
+</div>
+
+<!-- WA + ScrollTop -->
+<a class="waf" href="https://wa.me/917204914191" target="_blank"><span class="waico">💬</span><span class="walbl">WhatsApp Us</span></a>
+<div class="sct" id="sct" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<!-- HERO -->
+<div class="hero">
+  <canvas id="sc"></canvas>
+  <div class="ha"></div>
+  <div class="hbadge"><div class="bdot"></div>#1 Digital Agency for Mutual Fund Advisors in India</div>
+  <div class="ht1">We Build</div>
+  <div class="hrot">
+    <div class="hreel">
+      <span class="hrw c1">Premium Websites</span>
+      <span class="hrw c2">Investor Trust</span>
+      <span class="hrw c3">Digital Presence</span>
+      <span class="hrw c4">Business Growth</span>
+    </div>
+  </div>
+  <div class="ht2">for Advisors</div>
+  <p class="hsub">FinScale creates <strong>professional websites, digital marketing &amp; lead systems</strong> exclusively for Mutual Fund Distributors and Financial Advisors across India.</p>
+  <div class="hbtns">
+    <a class="bp" href="#pricing">View Pricing <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    <a class="bg" href="#contact">Get Started Free</a>
+  </div>
+  <div class="htags">
+    <div class="htag">🌐 Advisor Website</div>
+    <div class="htag">📈 Lead Generation</div>
+    <div class="htag">📣 Digital Marketing</div>
+    <div class="htag">🎬 Video Creation</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="sgrid">
+    <div class="sc"><div class="snum" data-t="150" data-s="+">0+</div><div class="slbl">Advisors Served</div></div>
+    <div class="sc"><div class="snum" data-t="98" data-s="%">0%</div><div class="slbl">Client Satisfaction</div></div>
+    <div class="sc"><div class="snum" data-t="30" data-s="m">0m</div><div class="slbl">Response Time</div></div>
+    <div class="sc"><div class="snum" data-t="5" data-s=" Days">0</div><div class="slbl">Avg. Delivery</div></div>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story">
+  <div class="sg">
+    <div class="stxt">
+      <div class="slabel">The Problem</div>
+      <h2 class="sh2">Most MFDs Are <span>Invisible Online</span></h2>
+      <p class="sp">70% of mutual fund advisors in India have no digital presence — no website, no way for investors to find them. Your expertise deserves to be seen and trusted.</p>
+      <div class="sbullets">
+        <div class="sbullet"><div class="bico">🔍</div>Investors Google for advisors — are you showing up?</div>
+        <div class="sbullet"><div class="bico">📱</div>Referrals check your website before calling you</div>
+        <div class="sbullet"><div class="bico">💼</div>A professional website = instant credibility</div>
+      </div>
+    </div>
+    <div class="svis">
+      <div class="vc">
+        <div class="cbars" id="cbars"></div>
+        <div class="clabel">Advisor Online Visibility — Before vs After FinScale</div>
+        <div class="vm tr"><div class="vmv">+340%</div><div class="vml">Online Visibility</div></div>
+        <div class="vm bl"><div class="vmv">₹12Cr+</div><div class="vml">AUM Grown</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sg rev">
+    <div class="stxt fr">
+      <div class="slabel">The Solution</div>
+      <h2 class="sh2">Websites That <span>Convert Investors</span></h2>
+      <p class="sp">Not just pretty pages — investor-converting machines. Every element builds trust, answers questions, and drives visitors to WhatsApp or call within seconds.</p>
+      <div class="sbullets">
+        <div class="sbullet"><div class="bico">⚡</div>Live in 3–5 days, not weeks</div>
+        <div class="sbullet"><div class="bico">🎯</div>Designed specifically for AMFI advisors</div>
+        <div class="sbullet"><div class="bico">📊</div>Built to rank on Google locally</div>
+      </div>
+    </div>
+    <div class="svis fl">
+      <div class="vc">
+        <div class="mwrap">
+          <div class="mbar">
+            <div class="md" style="background:#ff5f57;"></div>
+            <div class="md" style="background:#febc2e;"></div>
+            <div class="md" style="background:#28c840;"></div>
+            <div style="flex:1;margin-left:8px;height:16px;border-radius:4px;background:rgba(255,255,255,.06);display:flex;align-items:center;padding:0 9px;font-size:9px;color:rgba(218,232,248,.25);font-family:monospace;">yourname.finscale.in</div>
+          </div>
+          <div class="mdprev">
+            <div class="site-preview-1">
+              <div class="sp1-nav"><div class="sp1-logo"></div><div class="sp1-links"><div class="sp1-link"></div><div class="sp1-link"></div><div class="sp1-link"></div></div></div>
+              <div class="sp1-hero"><div class="sp1-h1"></div><div class="sp1-h2"></div><div class="sp1-h3"></div><div class="sp1-btns"><div class="sp1-btn"></div><div class="sp1-btn2"></div></div></div>
+              <div class="sp1-cards"><div class="sp1-card"></div><div class="sp1-card"></div><div class="sp1-card"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mlive"><span>LIVE IN 3 DAYS →</span><div class="mdots"><span style="background:var(--g);"></span><span style="background:rgba(0,229,160,.3);"></span><span style="background:rgba(0,229,160,.15);"></span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="svc" id="services">
+  <div class="sh rev">
+    <div class="eye">What We Offer</div>
+    <h2 class="sh2t">Our <span>Services</span></h2>
+    <p class="shp">Complete digital solutions built exclusively for Mutual Fund Advisors, Distributors, and Financial Consultants.</p>
+  </div>
+  <div class="svcgrid">
+    <div class="scard"><div class="snum2">01 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Advisor Website Development</h3><p>Premium landing pages and multi-page websites designed to convert visitors into long-term clients.</p><div class="sarr">Learn more →</div></div>
+    <div class="scard"><div class="snum2">02 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z"/></svg></div><h3>WhatsApp Lead Integration</h3><p>Instant WhatsApp + Call buttons for faster client connections and better trust building.</p><div class="sarr">Learn more →</div></div>
+    <div class="scard"><div class="snum2">03 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><h3>SEO &amp; Google Ranking</h3><p>Search engine optimization so your advisory website ranks for local investor searches organically.</p><div class="sarr">Learn more →</div></div>
+    <div class="scard"><div class="snum2">04 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div><h3>Digital Marketing for Advisors</h3><p>Instagram/Facebook campaigns that reach HNI investors and SIP seekers in your city.</p><div class="sarr">Learn more →</div></div>
+    <div class="scard"><div class="snum2">05 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Business Growth Videos</h3><p>Professional reels and promotional videos that position you as the trusted expert advisor.</p><div class="sarr">Learn more →</div></div>
+    <div class="scard"><div class="snum2">06 / 06</div><div class="sico"><svg viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div><h3>Branding &amp; Visual Identity</h3><p>Logo, brand colors, and complete visual identity that builds advisor credibility instantly.</p><div class="sarr">Learn more →</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq" id="clients">
+  <div class="mqwrap">
+    <div class="mqtrack">
+      <div class="mqchip"><span>🏦</span><span>Axis Mutual Fund</span></div>
+      <div class="mqchip"><span>🏛️</span><span>HDFC Mutual Fund</span></div>
+      <div class="mqchip"><span>💼</span><span>ICICI Prudential MF</span></div>
+      <div class="mqchip"><span>🏢</span><span>Kotak Mutual Fund</span></div>
+      <div class="mqchip"><span>📈</span><span>Nippon India MF</span></div>
+      <div class="mqchip"><span>🏦</span><span>SBI Mutual Fund</span></div>
+      <div class="mqchip"><span>🌐</span><span>UTI Mutual Fund</span></div>
+      <div class="mqchip"><span>💹</span><span>Mirae Asset MF</span></div>
+      <div class="mqchip"><span>📊</span><span>DSP Mutual Fund</span></div>
+      <div class="mqchip"><span>🏦</span><span>Axis Mutual Fund</span></div>
+      <div class="mqchip"><span>🏛️</span><span>HDFC Mutual Fund</span></div>
+      <div class="mqchip"><span>💼</span><span>ICICI Prudential MF</span></div>
+      <div class="mqchip"><span>🏢</span><span>Kotak Mutual Fund</span></div>
+      <div class="mqchip"><span>📈</span><span>Nippon India MF</span></div>
+      <div class="mqchip"><span>🏦</span><span>SBI Mutual Fund</span></div>
+      <div class="mqchip"><span>🌐</span><span>UTI Mutual Fund</span></div>
+      <div class="mqchip"><span>💹</span><span>Mirae Asset MF</span></div>
+      <div class="mqchip"><span>📊</span><span>DSP Mutual Fund</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="prc" id="pricing">
+  <div class="sh rev">
+    <div class="eye">Pricing</div>
+    <h2 class="sh2t"><span>Transparent</span> Plans</h2>
+    <p class="shp">Affordable plans for every Mutual Fund Advisor. One-time payment, no hidden fees ever.</p>
+  </div>
+  <div class="pgrid">
+    <div class="pcard feat">
+      <div class="pbadge">Popular</div>
+      <div class="ptier">Starter</div><h3>Advisor Landing Page</h3>
+      <p class="pdesc">Perfect for advisors starting their digital journey</p>
+      <div class="pamt">₹2,999</div><div class="pper">One-time · No hidden charges</div>
+      <div class="pdiv"></div>
+      <div class="pfeats">
+        <div class="pf"><div class="pck">✓</div>Premium Landing Page Design</div>
+        <div class="pf"><div class="pck">✓</div>Mobile Responsive Layout</div>
+        <div class="pf"><div class="pck">✓</div>WhatsApp + Call Integration</div>
+        <div class="pf"><div class="pck">✓</div>Contact Form Setup</div>
+        <div class="pf"><div class="pck">✓</div>Trust &amp; About Section</div>
+        <div class="pf"><div class="pck">✓</div><strong>Free Domain Included</strong></div>
+        <div class="pf"><div class="pck">✓</div>Fast 3-Day Delivery</div>
+      </div>
+      <a class="pbtn" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+    <div class="pcard">
+      <div class="ptier">Professional</div><h3>Business Website</h3>
+      <p class="pdesc">For advisors ready to scale their digital presence</p>
+      <div class="pamt">₹4,999</div><div class="pper">One-time · No hidden charges</div>
+      <div class="pdiv"></div>
+      <div class="pfeats">
+        <div class="pf"><div class="pck">✓</div>5-Page Professional Website</div>
+        <div class="pf"><div class="pck">✓</div>Premium UI Animations</div>
+        <div class="pf"><div class="pck">✓</div>SEO Optimization Setup</div>
+        <div class="pf"><div class="pck">✓</div>WhatsApp + Call Buttons</div>
+        <div class="pf"><div class="pck">✓</div>Services + Portfolio Page</div>
+        <div class="pf"><div class="pck">✓</div>30-Day Support Included</div>
+      </div>
+      <a class="pbtn" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+    <div class="pcard">
+      <div class="ptier">Growth</div><h3>Premium Growth Package</h3>
+      <p class="pdesc">Complete digital transformation for serious advisors</p>
+      <div class="pamt">₹9,999</div><div class="pper">One-time · No hidden charges</div>
+      <div class="pdiv"></div>
+      <div class="pfeats">
+        <div class="pf"><div class="pck">✓</div>Full Branding + Website</div>
+        <div class="pf"><div class="pck">✓</div>Lead Funnel Setup</div>
+        <div class="pf"><div class="pck">✓</div>Google Business Setup</div>
+        <div class="pf"><div class="pck">✓</div>Digital Marketing Support</div>
+        <div class="pf"><div class="pck">✓</div>Monthly Support Plan</div>
+        <div class="pf"><div class="pck">✓</div>Growth Strategy Consulting</div>
+      </div>
+      <a class="pbtn" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+  </div>
+</section>
+
+<!-- OUR WORK -->
+<section class="wk" id="work">
+  <div class="sh rev">
+    <div class="eye">Portfolio</div>
+    <h2 class="sh2t">Our <span>Work</span></h2>
+    <p class="shp">Real websites built for Mutual Fund Advisors across India — live and converting investors daily.</p>
+  </div>
+  <div class="wgrid">
+    <!-- Project 1 -->
+    <div class="wcard" onclick="window.open('https://fin-scale-s1ir.vercel.app','_blank')">
+      <div class="wcin">
+        <div class="wprev">
+          <div class="wpin">
+            <div class="wbr"><div class="wd2" style="background:#ff5f57;"></div><div class="wd2" style="background:#febc2e;"></div><div class="wd2" style="background:#28c840;"></div><div class="wurl">fin-scale-s1ir.vercel.app</div></div>
+            <div class="wpic">
+              <div class="site-preview-1">
+                <div class="sp1-nav"><div class="sp1-logo"></div><div class="sp1-links"><div class="sp1-link"></div><div class="sp1-link"></div><div class="sp1-link"></div></div></div>
+                <div class="sp1-hero"><div class="sp1-h1"></div><div class="sp1-h2"></div><div class="sp1-h3"></div><div class="sp1-btns"><div class="sp1-btn"></div><div class="sp1-btn2"></div></div></div>
+                <div class="sp1-cards"><div class="sp1-card"></div><div class="sp1-card"></div><div class="sp1-card"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="wover"></div>
+          <div class="wzoom"><div class="zbtn">🔍 View Live →</div></div>
+        </div>
+        <div class="winfo">
+          <div class="wtag">MFD · Pune</div>
+          <h3>FinTrust Wealth Management</h3>
+          <p>Premium dark-theme advisory platform with market ticker, SIP calculator, and investor lead capture. Built for a Pune MFD with 500+ clients.</p>
+          <a class="vbtn" href="https://fin-scale-s1ir.vercel.app" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <span>View Live Website</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Project 2 -->
+    <div class="wcard" onclick="window.open('https://shubhammokashi.github.io/firstClient/','_blank')">
+      <div class="wcin">
+        <div class="wprev">
+          <div class="wpin">
+            <div class="wbr"><div class="wd2" style="background:#ff5f57;"></div><div class="wd2" style="background:#febc2e;"></div><div class="wd2" style="background:#28c840;"></div><div class="wurl">shubhammokashi.github.io/firstClient/</div></div>
+            <div class="wpic">
+              <div class="site-preview-2">
+                <div class="sp2-nav"><div class="sp2-logo"></div><div class="sp1-links"><div class="sp1-link"></div><div class="sp1-link"></div><div class="sp1-link"></div></div></div>
+                <div class="sp2-hero"><div class="sp2-h1"></div><div class="sp2-h2"></div><div class="sp2-h3"></div><div class="sp2-btns"><div class="sp2-btn"></div><div class="sp1-btn2"></div></div></div>
+                <div class="sp2-cards"><div class="sp2-card"></div><div class="sp2-card"></div><div class="sp2-card"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="wover"></div>
+          <div class="wzoom"><div class="zbtn">🔍 View Live →</div></div>
+        </div>
+        <div class="winfo">
+          <div class="wtag">AMFI Registered · Belgaum</div>
+          <h3>Krushikesh B. Patil — MFD</h3>
+          <p>Elegant gold &amp; navy identity for a Belgaum-based AMFI registered MFD. Features investment calculator, fund navigator, and one-tap appointment booking.</p>
+          <a class="vbtn" href="https://shubhammokashi.github.io/firstClient/" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <span>View Live Website</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:48px;" class="rev">
+    <p style="color:rgba(218,232,248,.4);font-size:14.5px;margin-bottom:18px;font-weight:500;">Want a similar website for your advisory?</p>
+    <a class="bp" href="https://wa.me/917204914191" target="_blank" style="display:inline-flex;">Let's Build Yours <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="rv" id="reviews">
+  <div class="sh rev">
+    <div class="eye">Client Love</div>
+    <h2 class="sh2t">What Advisors <span>Say</span></h2>
+    <p class="shp">Real feedback from real Mutual Fund Advisors who trusted FinScale with their digital presence.</p>
+  </div>
+  <div class="rvgrid">
+    <div class="rvc"><div class="rvc::before"></div><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"FinScale delivered my website in just 4 days — faster than expected. The design is incredibly professional and my clients keep complimenting how trustworthy it looks. Leads have doubled since launch!"</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#00e5a0,#1a56db);">RP</div><div><div class="rname">Rajesh Patil</div><div class="rrole">AMFI Registered MFD · Pune</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+    <div class="rvc"><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"Maine pehle soch bhi nahi tha ki itna premium website itne affordable price mein milega. FinScale ne mera brand completely transform kar diya. WhatsApp inquiries roz aate hain ab!"</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#a855f7,#ec4899);">SM</div><div><div class="rname">Suresh Mehta</div><div class="rrole">MF Distributor · Ahmedabad</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+    <div class="rvc"><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"My website now ranks on Google for local searches and I'm getting 3-4 genuine inquiries every week without running any ads. FinScale understood exactly what an MFD needs."</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#f97316,#ef4444);">PK</div><div><div class="rname">Priya Kulkarni</div><div class="rrole">AMFI Certified Advisor · Bangalore</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+    <div class="rvc"><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"Response within 30 minutes as promised. They handled all the technical parts. Now I have a professional digital identity I'm proud to share with every investor I meet."</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#38bdf8,#1a56db);">AS</div><div><div class="rname">Amit Sharma</div><div class="rrole">MFD · Indore</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+    <div class="rvc"><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"Mere investors mere website ko dekh ke bahut impress hote hain. FinScale ne exactly wahi banaya jo maine imagine kiya tha — aur delivery bhi 3 din mein hui. Highly recommended!"</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#00e5a0,#38bdf8);">NK</div><div><div class="rname">Nikhil Kadam</div><div class="rrole">Financial Advisor · Nashik</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+    <div class="rvc"><div class="rstars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="rtxt">"FinScale made it worth every rupee. World-class design, perfect WhatsApp integration, and the support team is always available. Best investment I made for my advisory business."</p><div class="rperson"><div class="ravatar" style="background:linear-gradient(135deg,#a855f7,#3b82f6);">VD</div><div><div class="rname">Vandana Desai</div><div class="rrole">AMFI Registered Advisor · Mumbai</div><div class="rvbadge">✓ Verified Client</div></div></div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="ct" id="contact">
+  <div class="sh rev">
+    <div class="eye">Get In Touch</div>
+    <h2 class="sh2t">Contact <span>FinScale</span></h2>
+    <p class="shp">Send your requirement and we'll respond within 30 minutes, guaranteed.</p>
+  </div>
+  <div class="cchips rev">
+    <div class="cchip"><div class="cico">📱</div><div class="clbl">WhatsApp</div><div class="cval">+91 7204914191</div></div>
+    <div class="cchip"><div class="cico">✉️</div><div class="clbl">Email</div><div class="cval">9finscale.tech@gmail.com</div></div>
+    <div class="cchip"><div class="cico">⚡</div><div class="clbl">Response Time</div><div class="cval">Within 30 Minutes</div></div>
+    <div class="cchip"><div class="cico">🕒</div><div class="clbl">Working Hours</div><div class="cval">Mon–Sat, 9AM–8PM</div></div>
+  </div>
+  <div class="cinner">
+    <div class="cfc rev">
+      <h3>📩 Send Your Requirement</h3>
+      <p class="cdesc">Fill the form and your message goes directly to WhatsApp. We'll guide you to the perfect plan.</p>
+      <form class="cform" onsubmit="sWA(event)">
+        <div class="crow"><input id="nm" type="text" placeholder="Your Full Name" required><input id="mb" type="tel" placeholder="Mobile Number" required></div>
+        <input id="em" type="email" placeholder="Email Address" required>
+        <textarea id="ms" placeholder="Tell us about your website requirement..." required></textarea>
+        <button type="submit" class="csubmit">🚀 Send on WhatsApp</button>
+        <small>Your message goes directly to our WhatsApp. No spam, ever.</small>
+      </form>
+    </div>
+    <div class="cright">
+      <div class="wcard2 rev">
+        <h4>Why Choose FinScale?</h4>
+        <div class="wlist">
+          <div class="witem"><div class="wnum">01</div><div class="wt"><h5>MFD-Specific Expertise</h5><p>We only work with Mutual Fund Advisors — we know exactly what converts investors.</p></div></div>
+          <div class="witem"><div class="wnum">02</div><div class="wt"><h5>Fast 3–5 Day Delivery</h5><p>Your website goes live in days, not weeks. Always on time, every time.</p></div></div>
+          <div class="witem"><div class="wnum">03</div><div class="wt"><h5>Dedicated Support</h5><p>Direct WhatsApp access to your project lead. No ticket queues, ever.</p></div></div>
+        </div>
+      </div>
+      <div class="dcard rev">
+        <h4>Reach us directly</h4>
+        <div class="dbtns">
+          <a class="dbtn wa" href="https://wa.me/917204914191" target="_blank">💬 WhatsApp Now</a>
+          <a class="dbtn cl" href="tel:+917204914191">📞 Call Us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2026 <span>FinScale</span> — Digital Growth for Mutual Fund Advisors</div>
+  <div class="fl">
+    <a href="#services">Services</a><a href="#work">Our Work</a>
+    <a href="#pricing">Pricing</a><a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+    <a href="https://wa.me/917204914191" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+<script>
+/* CURSOR */
+var cx=0,cy=0,rx=0,ry=0;
+var cur=document.getElementById('cur'),curR=document.getElementById('curR');
+document.addEventListener('mousemove',function(e){
+  cx=e.clientX;cy=e.clientY;
+  cur.style.left=cx+'px';cur.style.top=cy+'px';
+});
+(function anim(){
+  rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;
+  curR.style.left=rx+'px';curR.style.top=ry+'px';
+  requestAnimationFrame(anim);
+})();
+
+/* STOCK CHART */
+(function(){
+  var cv=document.getElementById('sc');if(!cv)return;
+  var ctx=cv.getContext('2d'),W,H,pts=[],fr=0;
+  function resize(){
+    var h=cv.parentElement;
+    W=cv.width=h.offsetWidth;H=cv.height=h.offsetHeight;
+    pts=[];var p=70;
+    for(var i=0;i<Math.floor(W/5)+20;i++){p+=.2+(Math.random()-.47)*3.5;p=Math.max(20,Math.min(180,p));pts.push(p);}
+  }
+  function py(v,mn,mx){return H*.78-((v-mn)/(mx-mn||1))*H*.55;}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var t=fr*.006,N=pts.length;
+    var live=pts.map(function(v,i){return v+Math.sin(t+i*.38)*1.2;});
+    var mn=Math.min.apply(null,live),mx=Math.max.apply(null,live);
+    var xS=W/(N-1);
+    /* grid */
+    ctx.setLineDash([1,28]);ctx.lineWidth=1;
+    for(var g=0;g<8;g++){ctx.beginPath();ctx.moveTo(W*g/7,0);ctx.lineTo(W*g/7,H);ctx.strokeStyle='rgba(0,229,160,.035)';ctx.stroke();}
+    ctx.setLineDash([]);
+    /* line */
+    var lg=ctx.createLinearGradient(0,0,W,0);
+    lg.addColorStop(0,'rgba(0,229,160,.65)');lg.addColorStop(.5,'rgba(59,130,246,.5)');lg.addColorStop(1,'rgba(26,86,219,.55)');
+    ctx.beginPath();ctx.moveTo(0,py(live[0],mn,mx));
+    for(var i=1;i<N;i++){
+      var x=i*xS,y=py(live[i],mn,mx),px2=(i-1)*xS,py2=py(live[i-1],mn,mx);
+      ctx.bezierCurveTo((px2+x)/2,py2,(px2+x)/2,y,x,y);
+    }
+    ctx.strokeStyle=lg;ctx.lineWidth=2;ctx.shadowColor='rgba(0,229,160,.28)';ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
+    /* fill */
+    ctx.lineTo(W,H*.92);ctx.lineTo(0,H*.92);ctx.closePath();
+    var af=ctx.createLinearGradient(0,H*.1,0,H*.92);
+    af.addColorStop(0,'rgba(0,229,160,.1)');af.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=af;ctx.fill();
+    /* dots */
+    for(var i=0;i<N;i+=9){
+      ctx.beginPath();ctx.arc(i*xS,py(live[i],mn,mx),2,0,6.28);
+      ctx.fillStyle=i%18===0?'rgba(0,229,160,.55)':'rgba(59,130,246,.35)';ctx.fill();
+    }
+    fr++;requestAnimationFrame(draw);
+  }
+  resize();window.addEventListener('resize',resize);draw();
+})();
+
+/* NAV */
+window.addEventListener('scroll',function(){
+  document.getElementById('hdr').classList.toggle('scrolled',window.scrollY>30);
+  document.getElementById('sct').classList.toggle('vis',window.scrollY>400);
+});
+document.getElementById('ham').addEventListener('click',function(){document.getElementById('mn').classList.toggle('open');});
+function cn(){document.getElementById('mn').classList.remove('open');}
+
+/* BAR CHART */
+(function(){
+  var el=document.getElementById('cbars');if(!el)return;
+  [22,35,28,44,38,58,48,68,55,82,65,100].forEach(function(h,i){
+    var b=document.createElement('div');b.className='cbar';
+    b.style.height=h+'%';b.style.animationDelay=(i*.06)+'s';
+    b.style.opacity=.25+(h/100)*.75;el.appendChild(b);
+  });
+})();
+
+/* SCROLL REVEAL */
+var obs=new IntersectionObserver(function(es){
+  es.forEach(function(e){if(e.isIntersecting)e.target.classList.add('show');});
+},{threshold:.08});
+document.querySelectorAll('.sc,.scard,.pcard,.wcard,.rvc,.rev,.stxt,.svis,.vc').forEach(function(el){obs.observe(el);});
+document.querySelectorAll('.scard').forEach(function(c,i){c.style.transitionDelay=(i*.07)+'s';});
+document.querySelectorAll('.pcard').forEach(function(c,i){c.style.transitionDelay=(i*.1)+'s';});
+document.querySelectorAll('.rvc').forEach(function(c,i){c.style.transitionDelay=(i*.07)+'s';});
+document.querySelectorAll('.sc').forEach(function(c,i){c.style.transitionDelay=(i*.08)+'s';});
+document.querySelectorAll('.wcard').forEach(function(c,i){c.style.transitionDelay=(i*.12)+'s';});
+
+/* COUNTERS */
+var cobs=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(!e.isIntersecting)return;
+    var el=e.target.querySelector('[data-t]');
+    if(!el||el.dataset.done)return;el.dataset.done='1';
+    var tgt=+el.dataset.t,sfx=el.dataset.s||'',cur=0,step=tgt/55;
+    var tm=setInterval(function(){cur+=step;if(cur>=tgt){cur=tgt;clearInterval(tm);}el.textContent=Math.floor(cur)+sfx;},22);
+  });
+},{threshold:.4});
+document.querySelectorAll('.sc').forEach(function(el){cobs.observe(el);});
+
+/* WA FORM */
+function sWA(ev){
+  ev.preventDefault();
+  var n=document.getElementById('nm').value,m=document.getElementById('mb').value,
+      em=document.getElementById('em').value,msg=document.getElementById('ms').value;
+  var txt='Hello FinScale!%0A%0AName: '+encodeURIComponent(n)+'%0AMobile: '+encodeURIComponent(m)+'%0AEmail: '+encodeURIComponent(em)+'%0A%0ARequirement:%0A'+encodeURIComponent(msg);
+  window.open('https://wa.me/917204914191?text='+txt,'_blank');
+}
+
+/* 3D TILT on work cards */
+document.querySelectorAll('.wcard').forEach(function(card){
+  card.addEventListener('mousemove',function(e){
+    var r=card.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.querySelector('.wcin').style.transform='perspective(900px) rotateX('+(y*-6)+'deg) rotateY('+(x*6)+'deg) translateY(-6px)';
+  });
+  card.addEventListener('mouseleave',function(){card.querySelector('.wcin').style.transform='';});
+});
+
+/* 3D TILT on story viz cards */
+document.querySelectorAll('.vc').forEach(function(card){
+  card.addEventListener('mousemove',function(e){
+    var r=card.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform='perspective(1200px) rotateX('+(y*-5)+'deg) rotateY('+(x*5)+'deg) translateY(-6px)';
+    card.style.boxShadow=(x*-18)+'px '+(y*-18)+'px 60px rgba(0,0,0,.4),0 0 0 1px rgba(0,229,160,.12)';
+  });
+  card.addEventListener('mouseleave',function(){card.style.transform='';card.style.boxShadow='';});
+});
+</script>
+</body>
+</html>
