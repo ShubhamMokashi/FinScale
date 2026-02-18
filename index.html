@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FinScale – Digital Growth for Mutual Fund Advisors</title>
+  <meta name="description" content="FinScale builds premium websites, digital marketing & branding for Mutual Fund Distributors and Financial Advisors across India."/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ══════════════════════════════════════
+       ROOT VARIABLES
+    ══════════════════════════════════════ */
+    :root{
+      --green:#00b87a;
+      --blue:#1a56db;
+      --dark:#0b1a2e;
+      --mid:#3a5068;
+      --light:#607d94;
+      --border:rgba(0,0,0,0.07);
+      --shadow-sm:0 2px 12px rgba(0,0,0,0.06);
+      --shadow-md:0 6px 28px rgba(0,0,0,0.09);
+      --shadow-lg:0 16px 50px rgba(0,0,0,0.12);
+    }
+
+    /* ══════════════════════════════════════
+       BASE RESET
+    ══════════════════════════════════════ */
+    *{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
+    html{scroll-padding-top:68px;}
+    body{background:#fff;color:var(--dark);font-family:'Sora',sans-serif;overflow-x:hidden;}
+    a{text-decoration:none;}
+    img{display:block;max-width:100%;}
+
+    /* ══════════════════════════════════════
+       STOCK CHART CANVAS (BACKGROUND)
+    ══════════════════════════════════════ */
+    #stockCanvas{
+      position:fixed;top:0;left:0;
+      width:100%;height:100%;
+      z-index:0;pointer-events:none;
+    }
+
+    /* ══════════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════════ */
+    header{
+      position:fixed;top:0;width:100%;
+      padding:0 64px;height:68px;
+      background:rgba(255,255,255,0.96);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      display:flex;justify-content:space-between;align-items:center;
+      z-index:999;
+      border-bottom:1px solid var(--border);
+      box-shadow:var(--shadow-sm);
+      animation:slideDown .6s ease both;
+    }
+    @keyframes slideDown{
+      from{transform:translateY(-100%);opacity:0;}
+      to{transform:translateY(0);opacity:1;}
+    }
+
+    /* Logo — no box, no border, just the image */
+    .nav-brand{display:flex;align-items:center;gap:12px;}
+    .nav-brand img{height:44px;width:auto;object-fit:contain;}
+    .brand-name{
+      font-size:20px;font-weight:800;letter-spacing:-.3px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .brand-sub{font-size:10px;color:var(--light);font-weight:500;margin-top:2px;}
+
+    /* Desktop nav links */
+    .nav-links{display:flex;align-items:center;}
+    .nav-links a{
+      margin-left:22px;color:var(--mid);
+      font-size:13.5px;font-weight:600;
+      position:relative;transition:color .25s;
+    }
+    .nav-links a::after{
+      content:"";position:absolute;bottom:-4px;left:0;
+      width:0;height:2px;border-radius:2px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      transition:width .25s;
+    }
+    .nav-links a:hover{color:var(--green);}
+    .nav-links a:hover::after{width:100%;}
+    .nav-cta{
+      margin-left:18px !important;padding:9px 22px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      border-radius:50px;color:#fff !important;
+      font-weight:700 !important;font-size:13px !important;
+      box-shadow:0 4px 18px rgba(0,184,122,.3);
+      transition:transform .25s,box-shadow .25s !important;
+    }
+    .nav-cta::after{display:none !important;}
+    .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,184,122,.4) !important;}
+
+    /* Hamburger */
+    .ham{
+      display:none;flex-direction:column;justify-content:center;
+      gap:5px;cursor:pointer;padding:6px;
+    }
+    .ham span{
+      display:block;width:22px;height:2px;
+      background:var(--dark);border-radius:2px;transition:.3s;
+    }
+
+    /* Mobile nav drawer */
+    .mob-nav{
+      display:none;position:fixed;top:68px;left:0;right:0;
+      background:#fff;border-bottom:1px solid var(--border);
+      z-index:998;padding:12px 24px 20px;flex-direction:column;
+      box-shadow:0 8px 28px rgba(0,0,0,.07);
+    }
+    .mob-nav.open{display:flex;}
+    .mob-nav a{
+      padding:13px 0;border-bottom:1px solid rgba(0,0,0,.05);
+      color:var(--mid);font-size:14px;font-weight:600;transition:color .25s;
+    }
+    .mob-nav a:last-child{border-bottom:none;}
+    .mob-nav a:hover{color:var(--green);}
+
+    /* ══════════════════════════════════════
+       HERO  — centred, full viewport
+    ══════════════════════════════════════ */
+    .hero{
+      min-height:100vh;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;
+      padding:130px 40px 70px;
+      position:relative;z-index:1;
+    }
+
+    /* Pill badge */
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 18px;border-radius:50px;margin-bottom:28px;
+      background:rgba(0,184,122,.08);border:1px solid rgba(0,184,122,.22);
+      font-size:12.5px;font-weight:600;color:var(--green);
+      animation:fadeUp .8s .1s both;
+    }
+    .badge-dot{
+      width:7px;height:7px;border-radius:50%;background:var(--green);
+      animation:blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.35;transform:scale(.65);}}
+
+    /* "We Build" static line */
+    .hero-h1{
+      font-size:72px;font-weight:900;letter-spacing:-2px;
+      color:var(--dark);line-height:1.0;margin-bottom:2px;
+      animation:fadeUp .8s .18s both;
+    }
+
+    /* Rotating coloured word */
+    .hero-rotating-line{
+      height:90px;overflow:hidden;
+      margin-bottom:4px;
+      animation:fadeUp .8s .22s both;
+    }
+    .rotating-words{
+      display:flex;flex-direction:column;
+      animation:wordCycle 10s cubic-bezier(.76,0,.24,1) infinite;
+    }
+    .rotating-words span{
+      display:block;
+      height:90px;line-height:90px;
+      font-size:72px;font-weight:900;letter-spacing:-2px;
+      white-space:nowrap;
+    }
+    /* Word colours */
+    .w1{background:linear-gradient(90deg,#1a56db,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .w2{background:linear-gradient(90deg,#7c3aed,#db2777);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .w3{background:linear-gradient(90deg,#ea580c,#dc2626);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    /* Business Growth — SOLID GREEN ONLY */
+    .w4{-webkit-text-fill-color:#00b87a;color:#00b87a;}
+
+    @keyframes wordCycle{
+      0%,18%   {transform:translateY(0);}
+      22%,43%  {transform:translateY(-90px);}
+      47%,68%  {transform:translateY(-180px);}
+      72%,93%  {transform:translateY(-270px);}
+      97%,100% {transform:translateY(0);}
+    }
+
+    /* "for Mutual Fund Advisors" subtitle */
+    .hero-sub{
+      font-size:22px;font-weight:600;color:var(--mid);
+      letter-spacing:-.2px;margin-bottom:22px;
+      animation:fadeUp .8s .26s both;
+    }
+
+    /* Description paragraph */
+    .hero-desc{
+      font-size:16px;color:var(--mid);line-height:1.82;
+      max-width:580px;margin:0 auto 32px;font-weight:400;
+      animation:fadeUp .8s .3s both;
+    }
+
+    /* CTA row */
+    .hero-btns{
+      display:flex;align-items:center;justify-content:center;
+      gap:14px;margin-bottom:36px;flex-wrap:wrap;
+      animation:fadeUp .8s .34s both;
+    }
+    .btn-primary{
+      padding:15px 36px;border-radius:50px;
+      background:linear-gradient(90deg,var(--green),#009e64);
+      color:#fff;font-weight:700;font-size:15px;
+      border:none;cursor:pointer;
+      box-shadow:0 6px 24px rgba(0,184,122,.38);
+      transition:transform .28s,box-shadow .28s;
+      position:relative;overflow:hidden;
+    }
+    .btn-primary::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(110deg,transparent,rgba(255,255,255,.22),transparent);
+      transform:translateX(-120%);transition:transform .55s;
+    }
+    .btn-primary:hover::before{transform:translateX(120%);}
+    .btn-primary:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,184,122,.48);}
+
+    .btn-secondary{
+      padding:14px 34px;border-radius:50px;
+      background:#fff;border:1.5px solid rgba(26,86,219,.28);
+      color:var(--blue);font-weight:700;font-size:15px;
+      cursor:pointer;transition:all .28s;
+    }
+    .btn-secondary:hover{
+      border-color:var(--green);color:var(--green);
+      transform:translateY(-3px);
+      box-shadow:0 8px 24px rgba(0,184,122,.16);
+    }
+
+    /* Tag pills */
+    .hero-tags{
+      display:flex;justify-content:center;flex-wrap:wrap;gap:10px;
+      animation:fadeUp .8s .38s both;
+    }
+    .hero-tag{
+      padding:9px 19px;border-radius:50px;
+      background:#fff;border:1px solid var(--border);
+      font-size:13px;font-weight:600;color:var(--mid);
+      box-shadow:0 2px 10px rgba(0,0,0,.04);transition:all .28s;
+    }
+    .hero-tag:hover{
+      border-color:var(--green);color:var(--green);
+      transform:translateY(-2px);
+      box-shadow:0 6px 18px rgba(0,184,122,.13);
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(28px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ══════════════════════════════════════
+       STATS ROW
+    ══════════════════════════════════════ */
+    .stats-section{
+      position:relative;z-index:1;
+      padding:0 64px 68px;
+    }
+    .stats-grid{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+      max-width:860px;margin:0 auto;
+    }
+    .stat-card{
+      padding:28px 18px;border-radius:20px;
+      background:#fff;border:1px solid var(--border);
+      text-align:center;box-shadow:var(--shadow-sm);
+      opacity:0;transform:translateY(26px);
+      transition:all .6s cubic-bezier(.23,1,.32,1);
+    }
+    .stat-card.show{opacity:1;transform:translateY(0);}
+    .stat-card:hover{
+      border-color:rgba(0,184,122,.3);
+      box-shadow:0 10px 30px rgba(0,184,122,.10);
+      transform:translateY(-4px);
+    }
+    .stat-num{
+      font-size:38px;font-weight:900;line-height:1;margin-bottom:7px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .stat-lbl{font-size:12.5px;color:var(--light);font-weight:500;}
+
+    /* ══════════════════════════════════════
+       DIGITAL OFFICE QUOTE BOX
+    ══════════════════════════════════════ */
+    .quote-section{
+      position:relative;z-index:1;
+      padding:0 64px 70px;
+    }
+    .quote-box{
+      border-radius:28px;
+      background:linear-gradient(135deg,#f0fdf8,#eef4ff);
+      border:1px solid rgba(0,184,122,.14);
+      padding:60px 70px;text-align:center;
+      position:relative;overflow:hidden;
+      opacity:0;transform:translateY(38px);
+      transition:all .8s cubic-bezier(.23,1,.32,1);
+    }
+    .quote-box.show{opacity:1;transform:translateY(0);}
+    .quote-box::before{
+      content:"❝";position:absolute;
+      top:-30px;left:28px;
+      font-size:170px;font-family:Georgia,serif;
+      color:rgba(0,184,122,.06);line-height:1;pointer-events:none;
+    }
+    .quote-box h2{
+      font-size:36px;font-weight:900;margin-bottom:14px;letter-spacing:-.5px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .quote-box p{
+      font-size:16px;color:var(--mid);
+      max-width:620px;margin:0 auto;line-height:1.82;
+    }
+
+    /* ══════════════════════════════════════
+       SECTION SHARED
+    ══════════════════════════════════════ */
+    section.inner{padding:74px 64px;position:relative;z-index:1;}
+
+    .sec-title{text-align:center;margin-bottom:50px;}
+    .sec-title h2{
+      font-size:38px;font-weight:900;color:var(--dark);
+      margin-bottom:10px;letter-spacing:-.5px;
+    }
+    .sec-title h2 span{
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .sec-title p{
+      font-size:15px;color:var(--light);
+      max-width:540px;margin:0 auto;line-height:1.75;
+    }
+
+    /* reveal helper */
+    .reveal{opacity:0;transform:translateY(30px);transition:all .75s cubic-bezier(.23,1,.32,1);}
+    .reveal.show{opacity:1;transform:translateY(0);}
+
+    /* ══════════════════════════════════════
+       SERVICES — 3D FLIP CARDS
+       Front: icon + title side-by-side, description below
+       Hover: rotates 180°, shows gradient back with CTA
+    ══════════════════════════════════════ */
+    .services-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
+    }
+    .flip-card{
+      height:210px;perspective:1100px;
+      opacity:0;transform:translateY(32px);
+      transition:opacity .55s,transform .55s;
+    }
+    .flip-card.show{opacity:1;transform:translateY(0);}
+
+    .flip-inner{
+      position:relative;width:100%;height:100%;
+      transform-style:preserve-3d;
+      transition:transform .62s cubic-bezier(.23,1,.32,1);
+    }
+    .flip-card:hover .flip-inner{transform:rotateY(180deg);}
+
+    .flip-front,.flip-back{
+      position:absolute;inset:0;
+      border-radius:22px;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      padding:26px 24px;
+    }
+    .flip-front{
+      background:#fff;border:1px solid var(--border);
+      box-shadow:var(--shadow-sm);
+      display:flex;flex-direction:column;justify-content:flex-start;
+    }
+    .flip-front:hover{
+      border-color:rgba(0,184,122,.25);
+      box-shadow:0 12px 36px rgba(0,184,122,.10);
+    }
+    .flip-back{
+      background:linear-gradient(135deg,#00b87a,#1a56db);
+      transform:rotateY(180deg);
+      display:flex;flex-direction:column;
+      justify-content:center;align-items:center;
+      text-align:center;color:#fff;
+    }
+
+    /* Icon + title on SAME LINE */
+    .svc-head{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+    .svc-ico{
+      width:42px;height:42px;border-radius:12px;flex-shrink:0;
+      background:linear-gradient(135deg,rgba(0,184,122,.12),rgba(26,86,219,.10));
+      display:flex;align-items:center;justify-content:center;
+    }
+    .svc-ico svg{width:22px;height:22px;}
+    .flip-front h3{font-size:15px;font-weight:700;color:var(--dark);}
+    .flip-front p{font-size:13px;color:var(--light);line-height:1.65;}
+
+    .flip-back h3{font-size:17px;font-weight:800;margin-bottom:9px;}
+    .flip-back p{font-size:13px;line-height:1.65;opacity:.93;}
+    .flip-cta{
+      margin-top:14px;padding:8px 22px;
+      background:rgba(255,255,255,.2);
+      border:1.5px solid rgba(255,255,255,.55);
+      border-radius:50px;font-size:12.5px;font-weight:700;
+      color:#fff;transition:background .25s;
+    }
+    .flip-cta:hover{background:rgba(255,255,255,.35);}
+
+    /* ══════════════════════════════════════
+       AMC MARQUEE
+    ══════════════════════════════════════ */
+    .marquee-wrap{
+      border-radius:22px;overflow:hidden;
+      background:#f8fafb;border:1px solid var(--border);
+      padding:14px 0;
+    }
+    .marquee-track{
+      display:flex;gap:22px;align-items:center;
+      width:max-content;
+      animation:scrollX 26s linear infinite;
+    }
+    @keyframes scrollX{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+    .mq-item{
+      display:flex;align-items:center;justify-content:center;
+      padding:12px 22px;min-width:158px;height:72px;
+      background:#fff;border:1px solid var(--border);
+      border-radius:14px;transition:all .28s;
+    }
+    .mq-item:hover{
+      transform:translateY(-4px);
+      border-color:rgba(0,184,122,.3);
+      box-shadow:0 10px 28px rgba(0,184,122,.12);
+    }
+    .mq-item img{
+      max-width:128px;max-height:44px;
+      object-fit:contain;
+    }
+    /* Styled text fallback if image is missing */
+    .mq-txt{
+      display:none;
+      font-size:13px;font-weight:700;color:var(--mid);
+      text-align:center;letter-spacing:.3px;
+    }
+
+    /* ══════════════════════════════════════
+       PRICING CARDS
+    ══════════════════════════════════════ */
+    .pricing-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:22px;
+    }
+    .price-card{
+      padding:36px 30px;border-radius:26px;
+      background:#fff;border:1px solid var(--border);
+      box-shadow:var(--shadow-sm);position:relative;
+      opacity:0;transform:translateY(32px);
+      transition:all .55s cubic-bezier(.23,1,.32,1);
+    }
+    .price-card.show{opacity:1;transform:translateY(0);}
+    .price-card:hover{
+      transform:translateY(-8px);
+      border-color:rgba(0,184,122,.3);
+      box-shadow:0 22px 55px rgba(26,86,219,.10);
+    }
+    .price-card.featured{
+      border:2px solid rgba(0,184,122,.35);
+      background:linear-gradient(148deg,#f0fdf8,#eef4ff);
+    }
+    .price-card h3{
+      font-size:17px;font-weight:700;color:var(--dark);margin-bottom:8px;
+    }
+    .price-amount{
+      font-size:50px;font-weight:900;line-height:1;
+      margin:10px 0 24px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    }
+    .price-card ul{list-style:none;}
+    .price-card ul li{
+      display:flex;align-items:flex-start;gap:10px;
+      font-size:13.5px;color:var(--mid);
+      line-height:1.55;margin-bottom:13px;font-weight:500;
+    }
+    /* Diamond bullet */
+    .price-card ul li::before{
+      content:"◆";color:var(--green);
+      font-size:9px;margin-top:4px;flex-shrink:0;
+    }
+    .btn-buy{
+      display:block;width:100%;margin-top:22px;
+      padding:14px;text-align:center;border-radius:50px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      color:#fff;font-weight:700;font-size:14px;
+      border:none;cursor:pointer;
+      box-shadow:0 6px 22px rgba(0,184,122,.28);
+      transition:all .28s;position:relative;overflow:hidden;
+    }
+    .btn-buy::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(110deg,transparent,rgba(255,255,255,.2),transparent);
+      transform:translateX(-120%);transition:transform .55s;
+    }
+    .btn-buy:hover::before{transform:translateX(120%);}
+    .btn-buy:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,184,122,.38);}
+
+    /* ══════════════════════════════════════
+       CONTACT — white bg + dot-grid texture
+    ══════════════════════════════════════ */
+    .contact-section{
+      padding:74px 64px;
+      position:relative;z-index:1;
+      background:#fff;
+    }
+    /* Dot-grid texture */
+    .contact-section::before{
+      content:"";position:absolute;inset:0;
+      background-image:radial-gradient(circle,rgba(0,184,122,.09) 1px,transparent 1px);
+      background-size:26px 26px;
+      pointer-events:none;z-index:0;
+    }
+    .contact-section .sec-title,
+    .contact-wrap{position:relative;z-index:1;}
+
+    .contact-wrap{
+      display:grid;grid-template-columns:1fr 1fr;gap:24px;
+    }
+    .c-card{
+      padding:38px;border-radius:24px;
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow-md);
+      backdrop-filter:blur(6px);
+    }
+    .c-card h3{font-size:19px;font-weight:800;margin-bottom:8px;color:var(--dark);}
+    .c-card .desc{font-size:13.5px;color:var(--light);line-height:1.72;margin-bottom:20px;}
+
+    /* Form */
+    .c-form{display:flex;flex-direction:column;gap:12px;}
+    .c-form input,.c-form textarea{
+      padding:13px 16px;border-radius:12px;
+      border:1px solid rgba(0,0,0,.10);background:#f7fafd;
+      color:var(--dark);font-family:'Sora',sans-serif;
+      font-size:13.5px;outline:none;
+      transition:border-color .25s,background .25s;
+    }
+    .c-form input:focus,.c-form textarea:focus{
+      border-color:var(--green);background:#f0fdf8;
+    }
+    .c-form textarea{height:130px;resize:none;}
+    .c-form small{font-size:11.5px;color:#aab5c0;}
+    .btn-wa{
+      padding:14px;border-radius:50px;
+      background:linear-gradient(90deg,var(--green),var(--blue));
+      color:#fff;font-weight:700;font-size:14px;
+      border:none;cursor:pointer;
+      box-shadow:0 6px 22px rgba(0,184,122,.28);
+      transition:all .28s;position:relative;overflow:hidden;
+    }
+    .btn-wa::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(110deg,transparent,rgba(255,255,255,.2),transparent);
+      transform:translateX(-120%);transition:transform .55s;
+    }
+    .btn-wa:hover::before{transform:translateX(120%);}
+    .btn-wa:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,184,122,.38);}
+
+    /* Contact details */
+    .detail-list{display:flex;flex-direction:column;gap:11px;margin-top:22px;}
+    .d-row{
+      padding:14px 16px;border-radius:13px;
+      background:#f7fafd;border:1px solid rgba(0,0,0,.06);
+      font-size:13.5px;color:var(--mid);font-weight:500;transition:all .25s;
+    }
+    .d-row:hover{
+      border-color:rgba(0,184,122,.3);
+      background:rgba(0,184,122,.04);
+    }
+    .d-row span{color:var(--green);font-weight:700;}
+
+    /* ══════════════════════════════════════
+       WHATSAPP FLOAT BUTTON
+    ══════════════════════════════════════ */
+    .wa-float{
+      position:fixed;bottom:24px;right:24px;
+      background:linear-gradient(120deg,var(--green),var(--blue));
+      color:#fff;padding:13px 22px;border-radius:50px;
+      font-weight:700;font-size:14px;
+      box-shadow:0 10px 32px rgba(0,184,122,.38);
+      z-index:999;display:flex;align-items:center;gap:10px;
+      animation:floatBob 3s ease-in-out infinite;
+    }
+    @keyframes floatBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+    .wa-float:hover{
+      animation:none;
+      transform:translateY(-7px) scale(1.04);
+      box-shadow:0 18px 46px rgba(0,184,122,.50);
+    }
+    .wa-ico{
+      width:28px;height:28px;border-radius:50%;
+      background:rgba(255,255,255,.22);
+      display:flex;align-items:center;justify-content:center;
+      font-size:15px;
+    }
+
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer{
+      padding:22px 64px;
+      background:#f5f8fc;border-top:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:13px;color:var(--light);font-weight:500;
+      position:relative;z-index:1;
+    }
+    footer span{color:var(--green);}
+    .footer-links{display:flex;gap:22px;}
+    .footer-links a{color:var(--light);transition:color .25s;}
+    .footer-links a:hover{color:var(--green);}
+
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media(max-width:1024px){
+      .services-grid{grid-template-columns:repeat(2,1fr);}
+      .pricing-grid{grid-template-columns:repeat(2,1fr);}
+    }
+
+    @media(max-width:900px){
+      header{padding:0 20px;}
+      .nav-links{display:none;}
+      .ham{display:flex;}
+
+      .hero{padding:110px 22px 60px;}
+      .hero-h1{font-size:40px;letter-spacing:-1px;}
+      .hero-rotating-line{height:52px;}
+      .rotating-words span{height:52px;line-height:52px;font-size:40px;letter-spacing:-1px;}
+      @keyframes wordCycle{
+        0%,18%   {transform:translateY(0);}
+        22%,43%  {transform:translateY(-52px);}
+        47%,68%  {transform:translateY(-104px);}
+        72%,93%  {transform:translateY(-156px);}
+        97%,100% {transform:translateY(0);}
+      }
+      .hero-sub{font-size:17px;}
+      .hero-desc{font-size:14.5px;}
+
+      .stats-section{padding:0 20px 52px;}
+      .stats-grid{grid-template-columns:repeat(2,1fr);gap:13px;max-width:100%;}
+
+      .quote-section{padding:0 20px 52px;}
+      .quote-box{padding:38px 26px;}
+      .quote-box h2{font-size:26px;}
+
+      section.inner{padding:54px 20px;}
+      .sec-title h2{font-size:26px;}
+
+      .services-grid{grid-template-columns:1fr;}
+      /* On mobile, flip cards don't flip — show front only */
+      .flip-card{height:auto;perspective:none;}
+      .flip-inner{transform-style:flat;}
+      .flip-card:hover .flip-inner{transform:none;}
+      .flip-front{position:relative;height:auto;}
+      .flip-back{display:none;}
+
+      .pricing-grid{grid-template-columns:1fr;}
+
+      .contact-section{padding:54px 20px;}
+      .contact-wrap{grid-template-columns:1fr;}
+
+      footer{flex-direction:column;gap:12px;text-align:center;padding:20px;}
+      .footer-links{flex-wrap:wrap;justify-content:center;}
+    }
+
+    @media(max-width:480px){
+      .hero-h1{font-size:32px;}
+      .hero-rotating-line{height:42px;}
+      .rotating-words span{height:42px;line-height:42px;font-size:32px;}
+      @keyframes wordCycle{
+        0%,18%   {transform:translateY(0);}
+        22%,43%  {transform:translateY(-42px);}
+        47%,68%  {transform:translateY(-84px);}
+        72%,93%  {transform:translateY(-126px);}
+        97%,100% {transform:translateY(0);}
+      }
+      .stat-num{font-size:30px;}
+      .price-amount{font-size:40px;}
+      .sec-title h2{font-size:22px;}
+      /* Compact WhatsApp button on tiny screens */
+      .wa-label{display:none;}
+      .wa-float{padding:13px;border-radius:50%;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated stock chart background -->
+<canvas id="stockCanvas"></canvas>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<header>
+  <div class="nav-brand">
+    <img src="Logo.png" alt="FinScale"
+         onerror="this.style.display='none'">
+    <div>
+      <div class="brand-name">FinScale</div>
+      <div class="brand-sub">Digital Growth for Mutual Fund Advisors</div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#clients">Clients</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+    <a class="nav-cta" href="https://wa.me/917204914191" target="_blank">Get Started</a>
+  </div>
+
+  <div class="ham" id="ham">
+    <span></span><span></span><span></span>
+  </div>
+</header>
+
+<!-- Mobile nav -->
+<div class="mob-nav" id="mobNav">
+  <a href="#services" onclick="closeNav()">Services</a>
+  <a href="#clients"  onclick="closeNav()">Clients</a>
+  <a href="#pricing"  onclick="closeNav()">Pricing</a>
+  <a href="#contact"  onclick="closeNav()">Contact</a>
+</div>
+
+<!-- WhatsApp float -->
+<a class="wa-float" href="https://wa.me/917204914191" target="_blank">
+  <span class="wa-ico">✆</span>
+  <span class="wa-label">WhatsApp Us</span>
+</a>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    #1 Digital Agency for MFDs in India
+  </div>
+
+  <!-- Static "We Build" -->
+  <h1 class="hero-h1">We Build</h1>
+
+  <!-- Rotating coloured phrase -->
+  <div class="hero-rotating-line">
+    <div class="rotating-words">
+      <span class="w1">Premium Websites</span>
+      <span class="w2">Digital Presence</span>
+      <span class="w3">Investor Trust</span>
+      <span class="w4">Business Growth</span>
+    </div>
+  </div>
+
+  <!-- Subtitle -->
+  <p class="hero-sub">for Mutual Fund Advisors</p>
+
+  <!-- Description -->
+  <p class="hero-desc">
+    FinScale helps Mutual Fund Distributors and Financial Advisors grow digitally.
+    We create professional websites, branding, digital marketing, and lead systems
+    that build trust and attract real investors.
+  </p>
+
+  <!-- CTAs -->
+  <div class="hero-btns">
+    <a class="btn-primary" href="#pricing">View Pricing</a>
+    <a class="btn-secondary" href="#contact">Get Started Free</a>
+  </div>
+
+  <!-- Tag pills -->
+  <div class="hero-tags">
+    <div class="hero-tag">🌐 Advisor Website</div>
+    <div class="hero-tag">📈 Lead Generation</div>
+    <div class="hero-tag">📣 Digital Marketing</div>
+    <div class="hero-tag">🎬 Video Creation</div>
+  </div>
+
+</div><!-- /hero -->
+
+<!-- ══════════ STATS ══════════ -->
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" data-target="150" data-sfx="+">0+</div>
+      <div class="stat-lbl">Advisors Served</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" data-target="98" data-sfx="%">0%</div>
+      <div class="stat-lbl">Client Satisfaction</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" data-target="30" data-sfx="m">0m</div>
+      <div class="stat-lbl">Response Time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" data-target="5" data-sfx=" Days">0</div>
+      <div class="stat-lbl">Avg Delivery</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DIGITAL OFFICE QUOTE ══════════ -->
+<div class="quote-section">
+  <div class="quote-box">
+    <h2>Your Digital Office. Built to Convert.</h2>
+    <p>
+      Your website is your digital office. We build premium advisor websites that look
+      trustworthy, professional, and are engineered to turn every visitor into a real investor.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ SERVICES ══════════ -->
+<section class="inner" id="services" style="background:#f8fafb;">
+  <div class="sec-title reveal">
+    <h2>Our <span>Services</span></h2>
+    <p>Complete digital solutions for Mutual Fund Advisors, Distributors, and Financial Consultants.</p>
+  </div>
+
+  <div class="services-grid">
+
+    <!-- Card 1 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <path d="M8 21h8M12 17v4"/>
+              </svg>
+            </div>
+            <h3>Advisor Website Development</h3>
+          </div>
+          <p>Premium landing pages and multi-page websites designed to convert visitors into long-term clients.</p>
+        </div>
+        <div class="flip-back">
+          <h3>Website Development</h3>
+          <p>Mobile-first, SEO-ready, fast-loading advisor websites that build credibility and convert leads.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00b87a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.4 8.4 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.4 8.4 0 01-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.4 8.4 0 013.8-.9h.5a8.5 8.5 0 018 8v.5z"/>
+              </svg>
+            </div>
+            <h3>WhatsApp Lead Integration</h3>
+          </div>
+          <p>Instant WhatsApp + Call buttons for faster client connections and better trust building.</p>
+        </div>
+        <div class="flip-back">
+          <h3>WhatsApp Integration</h3>
+          <p>One-tap lead capture directly to your WhatsApp. Never miss an investor inquiry again.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </div>
+            <h3>SEO &amp; Google Ranking Setup</h3>
+          </div>
+          <p>Search engine optimization so your advisory website ranks higher and gets organic clients.</p>
+        </div>
+        <div class="flip-back">
+          <h3>SEO Optimization</h3>
+          <p>Rank on Google for "mutual fund advisor near me" and attract investors finding you organically.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00b87a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5"/>
+                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </div>
+            <h3>Digital Marketing for Advisors</h3>
+          </div>
+          <p>Instagram/Facebook marketing with campaign strategy to maximize your investor leads.</p>
+        </div>
+        <div class="flip-back">
+          <h3>Digital Marketing</h3>
+          <p>Targeted campaigns that reach HNI investors and SIP seekers in your city and beyond.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect x="1" y="5" width="15" height="14" rx="2"/>
+              </svg>
+            </div>
+            <h3>Business Growth Video Creation</h3>
+          </div>
+          <p>Professional reels, promotional videos &amp; branding content to boost your visibility.</p>
+        </div>
+        <div class="flip-back">
+          <h3>Video Creation</h3>
+          <p>Scroll-stopping Reels and promotional videos that position you as the trusted expert.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="flip-card">
+      <div class="flip-inner">
+        <div class="flip-front">
+          <div class="svc-head">
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00b87a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <h3>Advisor Branding &amp; Profile Setup</h3>
+          </div>
+          <p>Trust-building portfolio, certificates section, testimonials, and premium advisor presentation.</p>
+        </div>
+        <div class="flip-back">
+          <h3>Advisor Branding</h3>
+          <p>Complete brand identity — logo, palette, profile, and trust signals that investors respect.</p>
+          <a class="flip-cta" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /services-grid -->
+</section>
+
+<!-- ══════════ AMC CLIENTS MARQUEE ══════════ -->
+<section class="inner" id="clients" style="background:#fff;">
+  <div class="sec-title reveal">
+    <h2>Supported <span>Fund Houses</span></h2>
+    <p>Your website can display all major AMC brands. We design for every fund house.</p>
+  </div>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <!-- Set 1 -->
+      <a class="mq-item" href="https://www.axismf.com/" target="_blank">
+        <img src="clients/axis.png" alt="Axis MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Axis MF</span>
+      </a>
+      <a class="mq-item" href="https://www.hdfcfund.com/" target="_blank">
+        <img src="clients/hdfc.png" alt="HDFC MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">HDFC MF</span>
+      </a>
+      <a class="mq-item" href="https://www.icicipruamc.com/" target="_blank">
+        <img src="clients/icici.png" alt="ICICI Pru MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">ICICI Pru MF</span>
+      </a>
+      <a class="mq-item" href="https://www.kotakmf.com/" target="_blank">
+        <img src="clients/kotak.png" alt="Kotak MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Kotak MF</span>
+      </a>
+      <a class="mq-item" href="https://mf.nipponindiaim.com/" target="_blank">
+        <img src="clients/nippon.png" alt="Nippon MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Nippon MF</span>
+      </a>
+      <a class="mq-item" href="https://www.sbimf.com/" target="_blank">
+        <img src="clients/sbi.png" alt="SBI MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">SBI MF</span>
+      </a>
+      <a class="mq-item" href="https://www.utimf.com/" target="_blank">
+        <img src="clients/uti.png" alt="UTI MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">UTI MF</span>
+      </a>
+      <!-- Set 2 — duplicate for seamless loop -->
+      <a class="mq-item" href="https://www.axismf.com/" target="_blank">
+        <img src="clients/axis.png" alt="Axis MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Axis MF</span>
+      </a>
+      <a class="mq-item" href="https://www.hdfcfund.com/" target="_blank">
+        <img src="clients/hdfc.png" alt="HDFC MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">HDFC MF</span>
+      </a>
+      <a class="mq-item" href="https://www.icicipruamc.com/" target="_blank">
+        <img src="clients/icici.png" alt="ICICI Pru MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">ICICI Pru MF</span>
+      </a>
+      <a class="mq-item" href="https://www.kotakmf.com/" target="_blank">
+        <img src="clients/kotak.png" alt="Kotak MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Kotak MF</span>
+      </a>
+      <a class="mq-item" href="https://mf.nipponindiaim.com/" target="_blank">
+        <img src="clients/nippon.png" alt="Nippon MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">Nippon MF</span>
+      </a>
+      <a class="mq-item" href="https://www.sbimf.com/" target="_blank">
+        <img src="clients/sbi.png" alt="SBI MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">SBI MF</span>
+      </a>
+      <a class="mq-item" href="https://www.utimf.com/" target="_blank">
+        <img src="clients/uti.png" alt="UTI MF"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="mq-txt">UTI MF</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRICING ══════════ -->
+<section class="inner" id="pricing" style="background:#f8fafb;">
+  <div class="sec-title reveal">
+    <h2><span>Pricing</span> Plans</h2>
+    <p>Transparent, affordable plans built for every Mutual Fund Advisor.</p>
+  </div>
+
+  <div class="pricing-grid">
+
+    <!-- Plan 1 — Featured -->
+    <div class="price-card featured">
+      <h3>Advisor Landing Page</h3>
+      <div class="price-amount">₹2,999</div>
+      <ul>
+        <li>Premium Landing Page Design</li>
+        <li>Mobile Responsive Layout</li>
+        <li>WhatsApp + Call Integration</li>
+        <li>Contact Form Setup</li>
+        <li>Trust &amp; About Section</li>
+        <li>Fast 3-Day Delivery</li>
+      </ul>
+      <a class="btn-buy" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+
+    <!-- Plan 2 -->
+    <div class="price-card">
+      <h3>Business Website</h3>
+      <div class="price-amount">₹4,999</div>
+      <ul>
+        <li>5-Page Professional Website</li>
+        <li>Premium UI Animations</li>
+        <li>SEO Optimization Setup</li>
+        <li>WhatsApp + Call Buttons</li>
+        <li>Services + Portfolio Page</li>
+        <li>30-Day Support Included</li>
+      </ul>
+      <a class="btn-buy" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+
+    <!-- Plan 3 -->
+    <div class="price-card">
+      <h3>Premium Growth Package</h3>
+      <div class="price-amount">₹9,999</div>
+      <ul>
+        <li>Full Branding + Website</li>
+        <li>Lead Funnel Setup</li>
+        <li>Google Business Setup</li>
+        <li>Digital Marketing Support</li>
+        <li>Monthly Support Plan</li>
+        <li>Growth Strategy Consulting</li>
+      </ul>
+      <a class="btn-buy" href="https://wa.me/917204914191" target="_blank">Book Now →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ CONTACT ══════════ -->
+<section class="contact-section" id="contact">
+  <div class="sec-title reveal">
+    <h2>Contact <span>FinScale</span></h2>
+    <p>Send your requirement and we'll respond within 30 minutes.</p>
+  </div>
+
+  <div class="contact-wrap">
+
+    <!-- Form card -->
+    <div class="c-card reveal">
+      <h3>📩 Send Your Requirement</h3>
+      <p class="desc">Fill the form and your message goes directly to WhatsApp. We'll guide you to the perfect plan.</p>
+      <form class="c-form" onsubmit="sendWA(event)">
+        <input  id="nm" type="text"  placeholder="Your Full Name"   required>
+        <input  id="mb" type="tel"   placeholder="Mobile Number"    required>
+        <input  id="em" type="email" placeholder="Email Address"    required>
+        <textarea id="ms" placeholder="Tell us about your website requirement..." required></textarea>
+        <button type="submit" class="btn-wa">Send on WhatsApp ↗</button>
+        <small>Your message goes directly to our WhatsApp. No spam, ever.</small>
+      </form>
+    </div>
+
+    <!-- Details card -->
+    <div class="c-card reveal">
+      <h3>📞 Contact Details</h3>
+      <p class="desc">Reach out directly for advisor websites, branding, and marketing services. We respond fast.</p>
+      <div class="detail-list">
+        <div class="d-row">📱 WhatsApp: <span>+91 7204914191</span></div>
+        <div class="d-row">✉️ Email: <span>9finscale.tech@gmail.com</span></div>
+        <div class="d-row">⚡ Response Time: <span>Within 30 Minutes</span></div>
+        <div class="d-row">🇮🇳 Service Area: <span>All India (Online)</span></div>
+        <div class="d-row">🕒 Working Hours: <span>Mon – Sat, 9 AM – 8 PM</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div>© 2026 <span>FinScale</span> — Digital Growth for Mutual Fund Advisors</div>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#clients">Clients</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+    <a href="https://wa.me/917204914191" target="_blank">WhatsApp</a>
+  </div>
+</footer>
+
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────
+   1. REAL-LOOKING STOCK CHART BACKGROUND
+   ───────────────────────────────────── */
+(function(){
+  const cv = document.getElementById('stockCanvas');
+  const cx = cv.getContext('2d');
+  let W, H, series = [], frame = 0, N = 0;
+
+  function resize(){
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    N = Math.floor(W / 5) + 20;
+    buildSeries();
+  }
+
+  /* Build an upward-biased random walk (like a bull market) */
+  function buildSeries(){
+    series = [];
+    let p = 80 + Math.random() * 20;
+    for(let i = 0; i < N; i++){
+      p += (Math.random() - 0.40) * 4;   // upward drift
+      p  = Math.max(30, Math.min(170, p));
+      series.push(p);
+    }
+  }
+
+  /* Map a price value to a canvas Y coordinate */
+  function pxY(v, mn, mx){
+    return H * 0.82 - ((v - mn) / (mx - mn)) * H * 0.62;
+  }
+
+  function draw(){
+    cx.clearRect(0, 0, W, H);
+
+    const t    = frame * 0.007;
+    const live = series.map((v, i) => v + Math.sin(t + i * 0.45) * 1.5);
+    const mn   = Math.min(...live);
+    const mx   = Math.max(...live);
+    const xStep = W / (N - 1);
+
+    /* — Subtle dashed horizontal grid — */
+    cx.setLineDash([3, 14]);
+    cx.lineWidth = 0.8;
+    for(let g = 1; g <= 4; g++){
+      cx.beginPath();
+      cx.moveTo(0,     H * g / 5);
+      cx.lineTo(W,     H * g / 5);
+      cx.strokeStyle = 'rgba(26,86,219,0.045)';
+      cx.stroke();
+    }
+    cx.setLineDash([]);
+
+    /* — Micro candlestick bars — */
+    for(let i = 1; i < N - 1; i += 5){
+      const x  = i * xStep;
+      const y  = pxY(live[i], mn, mx);
+      const up = live[i] > live[i - 1];
+      const bh = Math.max(2, Math.abs(live[i] - live[i-1]) / (mx - mn) * H * 0.62);
+      cx.fillStyle = up ? 'rgba(0,184,122,0.07)' : 'rgba(220,38,38,0.04)';
+      cx.fillRect(x - xStep * 0.28, y - bh * 0.5, xStep * 0.56, bh + 1.5);
+    }
+
+    /* — Main price line (bezier smooth) — */
+    const lineGrad = cx.createLinearGradient(0, 0, W, 0);
+    lineGrad.addColorStop(0,   'rgba(0,184,122,0.55)');
+    lineGrad.addColorStop(0.5, 'rgba(56,189,248,0.45)');
+    lineGrad.addColorStop(1,   'rgba(26,86,219,0.45)');
+
+    cx.beginPath();
+    cx.moveTo(0, pxY(live[0], mn, mx));
+    for(let i = 1; i < N; i++){
+      const x  = i * xStep;
+      const y  = pxY(live[i], mn, mx);
+      const px = (i - 1) * xStep;
+      const py = pxY(live[i - 1], mn, mx);
+      cx.bezierCurveTo((px + x) / 2, py, (px + x) / 2, y, x, y);
+    }
+    cx.strokeStyle = lineGrad;
+    cx.lineWidth   = 2;
+    cx.stroke();
+
+    /* — Gradient area fill under the line — */
+    cx.lineTo(W, H * 0.88);
+    cx.lineTo(0, H * 0.88);
+    cx.closePath();
+    const areaFill = cx.createLinearGradient(0, H * 0.15, 0, H * 0.88);
+    areaFill.addColorStop(0,   'rgba(0,184,122,0.10)');
+    areaFill.addColorStop(0.5, 'rgba(26,86,219,0.04)');
+    areaFill.addColorStop(1,   'rgba(255,255,255,0)');
+    cx.fillStyle = areaFill;
+    cx.fill();
+
+    /* — Bullish upward-arrow markers — */
+    for(let i = 6; i < N - 1; i += 10){
+      if(live[i] > live[i - 4] + 1.8){
+        const x = i * xStep;
+        const y = pxY(live[i], mn, mx) - 18;
+        cx.beginPath();
+        cx.moveTo(x,     y);
+        cx.lineTo(x - 5, y + 9);
+        cx.lineTo(x + 5, y + 9);
+        cx.closePath();
+        cx.fillStyle = 'rgba(0,184,122,0.22)';
+        cx.fill();
+      }
+    }
+
+    /* — Glowing data dots — */
+    for(let i = 0; i < N; i += 8){
+      const x = i * xStep;
+      const y = pxY(live[i], mn, mx);
+      cx.beginPath();
+      cx.arc(x, y, 2.8, 0, Math.PI * 2);
+      cx.fillStyle = (i % 16 === 0)
+        ? 'rgba(0,184,122,0.55)'
+        : 'rgba(26,86,219,0.35)';
+      cx.fill();
+    }
+
+    frame++;
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+
+
+/* ─────────────────────────────────────
+   2. HAMBURGER MENU
+   ───────────────────────────────────── */
+document.getElementById('ham').addEventListener('click', () => {
+  document.getElementById('mobNav').classList.toggle('open');
+});
+function closeNav(){
+  document.getElementById('mobNav').classList.remove('open');
+}
+
+
+/* ─────────────────────────────────────
+   3. SCROLL REVEAL + STAGGER
+   ───────────────────────────────────── */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('show'); });
+}, { threshold: 0.10 });
+
+document.querySelectorAll(
+  '.flip-card, .price-card, .stat-card, .reveal, .quote-box'
+).forEach(el => revealObs.observe(el));
+
+/* Stagger delays */
+document.querySelectorAll('.flip-card')  .forEach((c,i) => c.style.transitionDelay = `${i*0.055}s`);
+document.querySelectorAll('.price-card') .forEach((c,i) => c.style.transitionDelay = `${i*0.10}s`);
+document.querySelectorAll('.stat-card')  .forEach((c,i) => c.style.transitionDelay = `${i*0.08}s`);
+
+
+/* ─────────────────────────────────────
+   4. ANIMATED COUNTERS
+   ───────────────────────────────────── */
+const countObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(!e.isIntersecting) return;
+    const el = e.target.querySelector('[data-target]');
+    if(!el || el.dataset.done) return;
+    el.dataset.done = '1';
+    const target = +el.dataset.target;
+    const sfx    = el.dataset.sfx || '';
+    let cur = 0;
+    const step = target / 55;
+    const timer = setInterval(() => {
+      cur += step;
+      if(cur >= target){ cur = target; clearInterval(timer); }
+      el.textContent = Math.floor(cur) + sfx;
+    }, 22);
+  });
+}, { threshold: 0.4 });
+
+document.querySelectorAll('.stat-card').forEach(el => countObs.observe(el));
+
+
+/* ─────────────────────────────────────
+   5. WHATSAPP FORM
+   ───────────────────────────────────── */
+function sendWA(ev){
+  ev.preventDefault();
+  const n   = document.getElementById('nm').value;
+  const m   = document.getElementById('mb').value;
+  const e   = document.getElementById('em').value;
+  const msg = document.getElementById('ms').value;
+  const txt =
+    `Hello FinScale!%0A%0A` +
+    `Name: ${encodeURIComponent(n)}%0A` +
+    `Mobile: ${encodeURIComponent(m)}%0A` +
+    `Email: ${encodeURIComponent(e)}%0A%0A` +
+    `Requirement:%0A${encodeURIComponent(msg)}%0A%0A` +
+    `I want a Mutual Fund Advisor Website.`;
+  window.open(`https://wa.me/917204914191?text=${txt}`, '_blank');
+}
+</script>
+
+</body>
+</html>
